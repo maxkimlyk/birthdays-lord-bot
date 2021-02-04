@@ -7,6 +7,7 @@ import aiogram.contrib.fsm_storage.memory  # type: ignore
 from . import authorizer
 from . import db
 from . import config
+from . import bot_wrapper
 
 
 def _create_dispatcher(bot: aiogram.Bot):
@@ -22,4 +23,5 @@ class Context:
         self.aio_loop = asyncio.get_event_loop()
         self.bot = aiogram.Bot(
             token=self.config['telegram_api_token'], loop=self.aio_loop)
+        self.bot_wrapper = bot_wrapper.BotWrapper(self.bot)
         self.dp = _create_dispatcher(self.bot)
