@@ -6,6 +6,7 @@ import aiogram  # type: ignore
 
 from bot import context
 from . import start
+from . import dev_get_data
 
 
 async def _not_authorized(
@@ -103,3 +104,5 @@ def register_handlers(ctx: context.Context):
         )
 
     register_handler(start.start, commands=['start', 'help'])
+
+    register_handler(dev_get_data.dev_get_data, commands=['get_data'])

@@ -3,13 +3,16 @@ import yaml
 
 
 _ENV_MAPPING_TO_CONFIG_KEYS = {
-  "TELEGRAM_API_TOKEN": "telegram_api_token",
-  "TELEGRAM_USER_ID": "telegram_user_id",
+    'TELEGRAM_API_TOKEN': 'telegram_api_token',
+    'TELEGRAM_USER_ID': 'telegram_user_id',
+    'GOOGLE_SHEETS_CREDENTIALS_PATH': 'google_sheets_credentials_path',
+    'GOOGLE_SHEETS_SPREADSHEET_ID': 'google_sheets_spreadsheet_id',
 }
 
 _DEFAULT_VALUES = {
-  "db_path": "/var/cache/birthday-lord-bot/db.db"
+  'db_path': '/var/cache/birthday-lord-bot/db.db',
 }
+
 
 def _load_config_file(file: str):
     with open(file) as f:

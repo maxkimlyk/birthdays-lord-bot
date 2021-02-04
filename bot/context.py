@@ -23,8 +23,8 @@ class Context:
         self.db = db.Db(self.config['db_path'])
 
         self.google_sheets_client = google_sheets_client.GoogleSheetsClient(
-            config['google_sheets_credentials_path'],
-            config['google_sheets_spreadsheet_id'],
+            self.config['google_sheets_credentials_path'],
+            self.config['google_sheets_spreadsheet_id'],
         )
 
         self.aio_loop = asyncio.get_event_loop()
