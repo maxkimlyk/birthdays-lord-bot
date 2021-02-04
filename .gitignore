@@ -1,5 +1,7 @@
 cache/
+__pycache__/
 .mypy_cache/
+.pytest_cache/
 .vscode/
 env/
-run_test_docker.sh
+
