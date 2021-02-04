@@ -3,7 +3,7 @@ services:
   bot:
     build: .
     volumes:
-      - /var/cache:/var/cache
+      - ./cache:/var/cache
     environment:
       TELEGRAM_API_TOKEN: ${TELEGRAM_API_TOKEN}
       TELEGRAM_USER_ID: ${TELEGRAM_USER_ID}
