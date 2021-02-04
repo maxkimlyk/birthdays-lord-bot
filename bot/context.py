@@ -8,6 +8,7 @@ from . import authorizer
 from . import db
 from . import config
 from . import bot_wrapper
+from . import google_sheets_client
 
 
 def _create_dispatcher(bot: aiogram.Bot):
@@ -20,8 +21,15 @@ class Context:
         self.config = config.load_config(config_path, environ)
         self.authorizer = authorizer.Authorizer(self.config)
         self.db = db.Db(self.config['db_path'])
+
+        self.google_sheets_client = google_sheets_client.GoogleSheetsClient(
+            config['google_sheets_credentials_path'],
+            config['google_sheets_spreadsheet_id'],
+        )
+
         self.aio_loop = asyncio.get_event_loop()
         self.bot = aiogram.Bot(
-            token=self.config['telegram_api_token'], loop=self.aio_loop)
+            token=self.config['telegram_api_token'], loop=self.aio_loop,
+        )
         self.bot_wrapper = bot_wrapper.BotWrapper(self.bot)
         self.dp = _create_dispatcher(self.bot)

@@ -2,3 +2,4 @@ cache/
 .mypy_cache/
 .vscode/
 env/
+run_test_docker.sh

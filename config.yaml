@@ -1,2 +1,4 @@
-TELEGRAM_BOT_API: add_me
-# db_path: /var/cache/birthday-lord-bot/db.db
+TELEGRAM_BOT_API: add_me!
+
+google_sheets_credentials_path: /var/cache/birthday-lord-bot/credentials.json
+google_sheets_spreadsheet_id: add_me!
