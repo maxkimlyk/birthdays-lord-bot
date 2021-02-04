@@ -6,6 +6,7 @@ import aiogram  # type: ignore
 
 from . import context
 from . import dialogs
+from . import periodic
 
 
 def _parse_args():
@@ -30,4 +31,6 @@ def main():
 
     ctx = context.Context(args.config, os.environ)
     dialogs.register_handlers(ctx)
+
+    ctx.aio_loop.create_task(periodic.periodic_main(ctx))
     aiogram.executor.start_polling(ctx.dp, skip_updates=True)
