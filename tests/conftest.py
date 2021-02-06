@@ -1,8 +1,9 @@
 import os
-
 import sqlite3
 
 import pytest
+
+from . import test_common
 
 
 _DB_INIT_SCRIPT_PATH = 'createdb.sql'
@@ -32,3 +33,7 @@ def _db(tmpdir):
 def _db_path(tmpdir):
     return _get_db_path(tmpdir)
 
+
+@pytest.fixture(name='mock_context')
+def _mock_context(db):
+    return test_common.MockContext(db)

@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Optional, List
+from typing import Optional, List, Tuple
 
 from . import types
 
@@ -86,7 +86,7 @@ def parse_row(row: List[str]) -> Optional[types.Birthday]:
     return types.Birthday(date, person_name)
 
 
-def parse_birthdays_table(rows: List[List[str]]) -> List[types.Birthday], List[ParseError]:
+def parse(rows: List[List[str]]) -> Tuple[List[types.Birthday], List[ParseError]]:
     result = []
     errors = []
 

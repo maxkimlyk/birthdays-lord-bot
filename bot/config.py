@@ -7,6 +7,7 @@ _ENV_MAPPING_TO_CONFIG_KEYS = {
     'TELEGRAM_USER_ID': 'telegram_user_id',
     'GOOGLE_SHEETS_CREDENTIALS_PATH': 'google_sheets_credentials_path',
     'GOOGLE_SHEETS_SPREADSHEET_ID': 'google_sheets_spreadsheet_id',
+    'GOOGLE_SHEETS_SHEET_NAME': 'google_sheets_sheet_name',
 }
 
 _DEFAULT_VALUES = {

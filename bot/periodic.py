@@ -5,7 +5,7 @@ from typing import List
 from . import context
 from . import types
 
-_PERIODIC_TASK_SLEEP_SECONDS = 10
+_PERIODIC_TASK_SLEEP_SECONDS = 60
 
 
 async def periodic_main(ctx: context.Context):
