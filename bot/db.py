@@ -1,6 +1,7 @@
 import datetime
 import json
 import sqlite3
+import logging
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 _DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'

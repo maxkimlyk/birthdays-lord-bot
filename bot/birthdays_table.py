@@ -48,6 +48,7 @@ def _parse_month(month_raw: str) -> int:
         raise ParseError('Bad month number')
     return month
 
+
 def _parse_year(year_raw: str) -> int:
     year = _parse_int(year_raw)
     if year < 1:
@@ -63,11 +64,7 @@ def _parse_date(raw: str) -> types.AnnualDate:
 
     month = _parse_month(components[1])
     day = _parse_day(components[0], _DAYS_IN_MONTH[month])
-
-    if len(components) > 2:
-        year = _parse_year(components[2])
-    else:
-        year = None
+    year = _parse_year(components[2]) if len(components) > 2 else None
 
     return types.AnnualDate(day, month, year)
 
@@ -89,16 +86,19 @@ def parse_row(row: List[str]) -> Optional[types.Birthday]:
     return types.Birthday(date, person_name)
 
 
-def parse_birthdays_table(rows: List[List[str]]) -> List[types.Birthday]:
+def parse_birthdays_table(rows: List[List[str]]) -> List[types.Birthday], List[ParseError]:
     result = []
+    errors = []
+
     for i, row in enumerate(rows):
         try:
-            birthday = _parse_row(row)
+            birthday = parse_row(row)
             if birthday is not None:
                 result.append(birthday)
         except ParseError as e:
-            raise ParseError(
-                'Failed to parse row {}: {}'.format(i + 1, str(e)),
+            errors.append(
+                ParseError('Failed to parse row {}: {}'.format(i + 1, str(e))),
             )
-    return result
+
+    return result, errors
 
