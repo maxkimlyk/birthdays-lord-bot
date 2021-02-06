@@ -41,3 +41,8 @@ def now_local() -> datetime.datetime:
     utc = now_utc()
     utc = utc.replace(tzinfo=from_zone)
     return utc.astimezone(to_zone)
+
+
+def parse_daytime(timestr: str) -> datetime.time:
+    dt = datetime.datetime.strptime(timestr, '%H:%M')
+    return datetime.time(hour=dt.hour, minute=dt.minute)

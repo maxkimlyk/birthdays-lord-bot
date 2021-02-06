@@ -8,6 +8,8 @@ from bot import context, views, types, birthdays_table, utils
 
 MonthDay = Tuple[int, int]
 
+_DAILY_BIRTHDAY_NOTIFICATION = 'daily_birthday_notification'
+
 
 def _as_month_day(annual_date: types.AnnualDate) -> MonthDay:
     return (annual_date.month, annual_date.day)
@@ -65,19 +67,66 @@ async def _notify_about_birthdays_today(
     await ctx.bot_wrapper.notify(message)
 
 
-async def handle_birthdays_today(ctx: context.Context, message: aiogram.types.Message):
+def _get_data_from_google_table(
+        ctx: context.Context,
+) -> Tuple[List[types.Birthday], List[birthdays_table.ParseError]]:
     try:
         raw_data = ctx.google_sheets_client.get_data(
             ranges=[ctx.config['google_sheets_sheet_name']],
         )
     except BaseException as e:
         logging.exception('Got exception during checking google table')
-        return
+        raise
+    return birthdays_table.parse(raw_data)
 
-    birthdays, errors = birthdays_table.parse(raw_data)
+
+async def handle_birthdays_today(
+        ctx: context.Context, message: aiogram.types.Message,
+):
+    birthdays, errors = _get_data_from_google_table(ctx)
     now = utils.now_local()
     await _notify_about_birthdays_today(ctx, now, birthdays)
 
 
-async def main_periodic(ctx: context.Context):
-    pass
+def _should_notify(
+        ctx: context.Context,
+        now: datetime.datetime,
+        notification_time: datetime.time,
+        notification_id: str,
+) -> bool:
+    last_notified = ctx.db.get_last_notified(notification_id)
+
+    today_notification_time = datetime.datetime(
+        now.year,
+        now.month,
+        now.day,
+        notification_time.hour,
+        notification_time.minute,
+    )
+
+    if (
+            last_notified >= today_notification_time
+            or now < today_notification_time
+    ):
+        return False
+
+    return True
+
+
+async def do_periodic_stuff(ctx: context.Context):
+    now = utils.now_local()
+    birthdays, errors = _get_data_from_google_table(ctx)
+
+    if errors != []:
+        # TODO: notify about errors
+        pass
+
+    notification_time = utils.parse_daytime(ctx.config['notification_time'])
+    if _should_notify(
+            ctx,
+            now,
+            notification_time,
+            _DAILY_BIRTHDAY_NOTIFICATION,
+    ):
+        await _notify_about_birthdays_today(ctx, now, birthdays)
+        ctx.db.set_last_notified(_DAILY_BIRTHDAY_NOTIFICATION, now)

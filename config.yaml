@@ -3,3 +3,4 @@ telegram_user_id: add_me!
 google_sheets_credentials_path: /var/cache/birthday-lord-bot/google_sheets_credentials.json
 google_sheets_spreadsheet_id: add_me!
 google_sheets_sheet_name: birthdays
+notification_time: 07:00

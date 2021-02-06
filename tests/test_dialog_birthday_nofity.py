@@ -6,6 +6,7 @@ from bot import types
 
 from .test_common import *
 
+
 @pytest.mark.parametrize(
     'now,birthdays,expected',
     [
@@ -23,19 +24,13 @@ from .test_common import *
         ),
         (
             datetime.datetime(2020, 2, 28),
-            [
-                types.Birthday(types.AnnualDate(29, 2), 'Leapman'),
-            ],
+            [types.Birthday(types.AnnualDate(29, 2), 'Leapman')],
             [],
         ),
         (
             datetime.datetime(2021, 2, 28),
-            [
-                types.Birthday(types.AnnualDate(29, 2), 'Leapman'),
-            ],
-            [
-                types.Birthday(types.AnnualDate(29, 2), 'Leapman'),
-            ],
+            [types.Birthday(types.AnnualDate(29, 2), 'Leapman')],
+            [types.Birthday(types.AnnualDate(29, 2), 'Leapman')],
         ),
     ],
 )
@@ -48,22 +43,63 @@ def test_select_birthdays_today(now, birthdays, expected):
     [
         (
             datetime.datetime(2020, 2, 1),
-            [
-                ['John', '1.03'],
-                ['Kate', '01.2'],
-                ['Amy', '01.02.1990'],
-            ],
+            [['John', '1.03'], ['Kate', '01.2'], ['Amy', '01.02.1990']],
             (
                 'Сегодня дни рождения у\n'
                 '<b>Kate</b> \n'
                 '<b>Amy</b> (30 лет)'
-            )
+            ),
         ),
     ],
 )
 @pytest.mark.asyncio
-async def test_handle_birthdays_today(mock_context, mock_time, now, birthdays_data, expected):
+async def test_handle_birthdays_today(
+        mock_context, mock_time, now, birthdays_data, expected,
+):
     mock_time.set_local(now)
     mock_context.google_sheets_client.data = birthdays_data
-    await dialogs_birthdays.handle_birthdays_today(mock_context, "/today")
+    await dialogs_birthdays.handle_birthdays_today(mock_context, '/today')
     assert mock_context.bot.last_message.text == expected
+
+
+@pytest.mark.parametrize(
+    'birthdays_data',
+    [[['John', '1.03'], ['Kate', '01.2'], ['Amy', '01.02.1990']]],
+)
+@pytest.mark.parametrize(
+    'now,last_notification,notification_time,should_notify',
+    [
+        (
+            datetime.datetime(2020, 2, 1, 6, 58),
+            datetime.datetime(2020, 1, 31, 7, 1),
+            "07:00",
+            False,
+        ),
+        (
+            datetime.datetime(2020, 2, 1, 7, 0),
+            datetime.datetime(2020, 1, 31, 7, 1),
+            "07:00",
+            True,
+        ),
+        (
+            datetime.datetime(2020, 2, 1, 12, 11),
+            datetime.datetime(2020, 1, 1, 7, 0),
+            "12:00",
+            True,
+        ),
+    ],
+)
+@pytest.mark.asyncio
+async def test_periodic_notification(
+        mock_context,
+        mock_time,
+        now,
+        birthdays_data,
+        last_notification,
+        notification_time,
+        should_notify,
+):
+    mock_time.set_local(now)
+    mock_context.config['notification_time'] = notification_time
+    await dialogs_birthdays.do_periodic_stuff(mock_context)
+    assert len(mock_context.bot.messages) == int(should_notify)

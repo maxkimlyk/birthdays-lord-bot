@@ -1,4 +1,4 @@
-CREATE TABLE periodic_task(
+CREATE TABLE notifications(
   id TEXT PRIMARY KEY,
-  last_executed TEXT NOT NULL
+  last_notified TEXT NOT NULL
 );

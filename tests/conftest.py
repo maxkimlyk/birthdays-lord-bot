@@ -20,7 +20,7 @@ def _get_db_path(tmpdir):
     return file
 
 
-@pytest.fixture(name='db')
+@pytest.fixture(name='db', autouse=True)
 def _db(tmpdir):
     file = _get_db_path(tmpdir)
     connection = sqlite3.connect(file)
@@ -35,8 +35,8 @@ def _db_path(tmpdir):
 
 
 @pytest.fixture(name='mock_context')
-def _mock_context(db):
-    return test_common.MockContext(db)
+def _mock_context(db_path):
+    return test_common.MockContext(db_path)
 
 
 @pytest.fixture(name='mock_time', autouse=True)

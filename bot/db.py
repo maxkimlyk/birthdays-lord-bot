@@ -20,22 +20,20 @@ class Db:
         self._connection = sqlite3.connect(path_to_dbfile)
         self._connection.row_factory = sqlite3.Row
 
-    def set_periodic_task_last_executed(
-            self, periodic_task: str, last_executed: datetime.datetime,
+    def set_last_notified(
+            self, notification_id: str, last_notified: datetime.datetime,
     ):
         self._connection.execute(
-            'INSERT OR REPLACE INTO periodic_task(id, last_executed) '
+            'INSERT OR REPLACE INTO notifications(id, last_notified) '
             'VALUES (?, ?)',
-            (periodic_task, _format_datetime(last_executed)),
+            (notification_id, _format_datetime(last_notified)),
         )
         self._connection.commit()
 
-    def get_periodic_task_last_executed(
-            self, periodic_task: str,
-    ) -> datetime.datetime:
+    def get_last_notified(self, notification_id: str) -> datetime.datetime:
         fetched = self._connection.execute(
-            'SELECT last_executed FROM periodic_task WHERE id = ?',
-            (periodic_task,),
+            'SELECT last_notified FROM notifications WHERE id = ?',
+            (notification_id,),
         ).fetchone()
 
         if fetched is not None:
