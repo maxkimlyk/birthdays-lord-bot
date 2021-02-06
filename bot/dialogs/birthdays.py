@@ -60,7 +60,7 @@ async def _notify_about_birthdays_today(
 ):
     birthdays_to_notify = select_birthdays_today(now, birthdays)
 
-    logging.info('Birthdays to notify: %s', birthdays_to_notify)
+    logging.info('Notifying about birthdays: %s', birthdays_to_notify)
 
     message = views.notify.build_birthdays_today_notification(
         _build_birthday_show_parameters(birthdays_to_notify, now.year),
@@ -127,8 +127,10 @@ async def notify_about_errors(
         errors: Iterable[types.TableParseError],
 ):
     if not _should_notify_about_errors(ctx, data_hash):
+        logging.debug("Shouldn't notify about errors")
         return
 
+    logging.info("Notifying about errors")
     await ctx.bot_wrapper.notify(
         views.notify.build_errors_notification(errors)
     )
@@ -137,8 +139,13 @@ async def notify_about_errors(
 
 
 async def do_periodic_stuff(ctx: context.Context):
+    logging.debug("Start periodic stuff")
+
     now = utils.now_local()
     birthdays, errors, data_hash = _get_data_from_google_table(ctx)
+
+    logging.debug("Birthdays: %s", birthdays)
+    logging.debug("Errors: %s", errors)
 
     if errors != []:
         await notify_about_errors(ctx, data_hash, errors)
