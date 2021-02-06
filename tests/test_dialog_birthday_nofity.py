@@ -100,7 +100,8 @@ async def test_periodic_birthday_today_notification(
         should_notify,
 ):
     mock_time.set_local(now)
-    # TODO: use birthday data
+    mock_context.google_sheets_client.data = birthdays_data
+    mock_context.db.set_last_notified(dialogs_birthdays._TABLE_DATA_HASH_KEY, last_notification)
     mock_context.config['notification_time'] = notification_time
     await dialogs_birthdays.do_periodic_stuff(mock_context)
     assert len(mock_context.bot.messages) == int(should_notify)
