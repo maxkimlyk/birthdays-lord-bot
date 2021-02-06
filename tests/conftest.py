@@ -37,3 +37,8 @@ def _db_path(tmpdir):
 @pytest.fixture(name='mock_context')
 def _mock_context(db):
     return test_common.MockContext(db)
+
+
+@pytest.fixture(name='mock_time', autouse=True)
+def _mock_time():
+    return test_common.TimeMocker()

@@ -102,28 +102,17 @@ class MockContext:
         self.bot_wrapper = bot_wrapper.BotWrapper(self.bot, self.config)
 
 
-def _set_mock_time(local, utc):
-    if local is None and utc is None:
-        return
+class TimeMocker:
+    def __init__(self):
+        utils.reset_mock_time()
 
-    if local is not None and utc is None:
+    def set_local(self, local):
         utc = local - datetime.timedelta(hours=3)
-    if utc is not None and local is None:
+        utils.set_mock_time(local, utc)
+
+    def set_utc(self, utc):
         local = utc + datetime.timedelta(hours=3)
+        utils.set_mock_time(local, utc)
 
-    utils.set_mock_time(local, utc)
-
-
-def _reset_mock_time():
-    utils.reset_mock_time()
-
-
-def mock_time(local=None, utc=None):
-    def decorator(func):
-        @functools.wraps(func)
-        async def wrapper(*args, **kwargs):
-            _set_mock_time(local, utc)
-            await func(*args, **kwargs)
-            _reset_mock_time()
-        return wrapper
-    return decorator
+    def __del__(self):
+        utils.reset_mock_time()

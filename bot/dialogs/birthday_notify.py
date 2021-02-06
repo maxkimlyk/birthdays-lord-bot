@@ -57,13 +57,12 @@ async def _notify_about_birthdays_today(
 ):
     birthdays_to_notify = select_birthdays_today(now, birthdays)
 
-    if birthdays_to_notify != []:
-        logging.info('Birthdays to notify: %s', birthdays_to_notify)
+    logging.info('Birthdays to notify: %s', birthdays_to_notify)
 
-        message = views.notify.build_birthdays_today_notification(
-            _build_birthday_show_parameters(birthdays_to_notify, now.year),
-        )
-        await ctx.bot_wrapper.notify(message)
+    message = views.notify.build_birthdays_today_notification(
+        _build_birthday_show_parameters(birthdays_to_notify, now.year),
+    )
+    await ctx.bot_wrapper.notify(message)
 
 
 async def handle_birthdays_today(ctx: context.Context, message: aiogram.types.Message):

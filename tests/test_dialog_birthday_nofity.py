@@ -53,17 +53,17 @@ def test_select_birthdays_today(now, birthdays, expected):
                 ['Kate', '01.2'],
                 ['Amy', '01.02.1990'],
             ],
-            "sdsdf"
+            (
+                'Сегодня дни рождения у\n'
+                '<b>Kate</b> \n'
+                '<b>Amy</b> (30 лет)'
+            )
         ),
     ],
 )
 @pytest.mark.asyncio
-@mock_time(local=datetime.datetime(2020, 2, 1))
-async def test_handle_birthdays_today(mock_context, now, birthdays_data, expected):
+async def test_handle_birthdays_today(mock_context, mock_time, now, birthdays_data, expected):
+    mock_time.set_local(now)
     mock_context.google_sheets_client.data = birthdays_data
     await birthday_notify.handle_birthdays_today(mock_context, "/today")
-    assert mock_context.bot.last_message.text == (
-        'Сегодня дни рождения у\n'
-        '<b>Kate</b> \n'
-        '<b>Amy</b> (30 лет)'
-    )
+    assert mock_context.bot.last_message.text == expected
