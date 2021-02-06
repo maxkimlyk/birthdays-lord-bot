@@ -56,10 +56,8 @@ def _build_birthday_show_parameters(
 async def _notify_about_birthdays_today(
         ctx: context.Context,
         now: datetime.datetime,
-        birthdays: Iterable[types.Birthday],
+        birthdays_to_notify: List[types.Birthday],
 ):
-    birthdays_to_notify = select_birthdays_today(now, birthdays)
-
     logging.info('Notifying about birthdays: %s', birthdays_to_notify)
 
     message = views.notify.build_birthdays_today_notification(
@@ -84,7 +82,8 @@ async def handle_birthdays_today(
 ):
     birthdays, errors, _ = _get_data_from_google_table(ctx)
     now = utils.now_local()
-    await _notify_about_birthdays_today(ctx, now, birthdays)
+    birthdays_to_notify = select_birthdays_today(now, birthdays)
+    await _notify_about_birthdays_today(ctx, now, birthdays_to_notify)
 
 
 def _should_notify(
@@ -154,5 +153,7 @@ async def do_periodic_stuff(ctx: context.Context):
     if _should_notify(
             ctx, now, notification_time, _DAILY_BIRTHDAY_NOTIFICATION,
     ):
-        await _notify_about_birthdays_today(ctx, now, birthdays)
+        birthdays_to_notify = select_birthdays_today(now, birthdays)
+        if birthdays_to_notify != []:
+            await _notify_about_birthdays_today(ctx, now, birthdays_to_notify)
         ctx.db.set_last_notified(_DAILY_BIRTHDAY_NOTIFICATION, now)

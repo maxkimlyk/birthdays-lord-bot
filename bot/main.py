@@ -25,7 +25,7 @@ def main():
     logging.basicConfig(
         filename=args.logfile,
         format='%(asctime)s %(levelname)-8s %(message)s',
-        level=logging.INFO,
+        level=logging.DEBUG,
         datefmt='%Y-%m-%d %H:%M:%S',
     )
 
