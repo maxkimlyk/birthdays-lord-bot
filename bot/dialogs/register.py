@@ -7,7 +7,7 @@ import aiogram  # type: ignore
 from bot import context
 from . import start
 from . import dev_get_data
-from . import birthday_notify
+from . import birthdays
 
 
 async def _not_authorized(
@@ -105,6 +105,6 @@ def register_handlers(ctx: context.Context):
         )
 
     register_handler(start.start, commands=['start', 'help'])
-    register_handler(birthday_notify.handle_birthdays_today, commands=['today'])
+    register_handler(birthdays.handle_birthdays_today, commands=['today'])
 
     register_handler(dev_get_data.dev_get_data, commands=['get_data'])

@@ -1,7 +1,7 @@
 import datetime
 
 import pytest
-from bot.dialogs import birthday_notify
+from bot.dialogs import birthdays as dialogs_birthdays
 from bot import types
 
 from .test_common import *
@@ -40,7 +40,7 @@ from .test_common import *
     ],
 )
 def test_select_birthdays_today(now, birthdays, expected):
-    assert birthday_notify.select_birthdays_today(now, birthdays) == expected
+    assert dialogs_birthdays.select_birthdays_today(now, birthdays) == expected
 
 
 @pytest.mark.parametrize(
@@ -65,5 +65,5 @@ def test_select_birthdays_today(now, birthdays, expected):
 async def test_handle_birthdays_today(mock_context, mock_time, now, birthdays_data, expected):
     mock_time.set_local(now)
     mock_context.google_sheets_client.data = birthdays_data
-    await birthday_notify.handle_birthdays_today(mock_context, "/today")
+    await dialogs_birthdays.handle_birthdays_today(mock_context, "/today")
     assert mock_context.bot.last_message.text == expected
