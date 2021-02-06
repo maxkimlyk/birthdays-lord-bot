@@ -4,6 +4,8 @@ import sqlite3
 import logging
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
+from . import exceptions
+
 _DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 
 
@@ -43,3 +45,22 @@ class Db:
                 logging.error('Failed to parse datetime from db: %s', fetched)
 
         return datetime.datetime.min
+
+    def add_cache_value(self, key: str, value: str):
+        self._connection.execute(
+            'INSERT OR REPLACE INTO cache(key, value) '
+            'VALUES (?, ?)',
+            (key, value),
+        )
+        self._connection.commit()
+
+    def get_cache_value(self, key: str):
+        fetched = self._connection.execute(
+            'SELECT value FROM cache WHERE key = ?',
+            (key,),
+        ).fetchone()
+
+        if fetched is None:
+            raise exceptions.NoSuchData("No value with key {}".format(key))
+
+        return fetched[0]

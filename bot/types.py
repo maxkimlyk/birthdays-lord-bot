@@ -18,3 +18,8 @@ class AnnualDate:
 class Birthday:
     date: AnnualDate
     person_name: str
+
+
+@dataclasses.dataclass
+class TableParseError:
+    description: str

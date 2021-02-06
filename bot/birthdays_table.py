@@ -86,7 +86,17 @@ def parse_row(row: List[str]) -> Optional[types.Birthday]:
     return types.Birthday(date, person_name)
 
 
-def parse(rows: List[List[str]]) -> Tuple[List[types.Birthday], List[ParseError]]:
+def _get_hash(rows: List[List[str]]) -> int:
+    h = 0
+    for row in rows:
+        for value in row:
+            h = h ^ hash(value)
+    return h
+
+
+def parse(
+        rows: List[List[str]],
+) -> Tuple[List[types.Birthday], List[types.TableParseError], int]:
     result = []
     errors = []
 
@@ -97,8 +107,9 @@ def parse(rows: List[List[str]]) -> Tuple[List[types.Birthday], List[ParseError]
                 result.append(birthday)
         except ParseError as e:
             errors.append(
-                ParseError('Failed to parse row {}: {}'.format(i + 1, str(e))),
+                types.TableParseError(
+                    'Row #{}: {}'.format(i + 1, str(e)),
+                ),
             )
 
-    return result, errors
-
+    return result, errors, _get_hash(rows)

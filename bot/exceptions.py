@@ -1,0 +1,2 @@
+class NoSuchData(RuntimeError):
+    pass

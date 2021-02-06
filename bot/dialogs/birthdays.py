@@ -4,11 +4,12 @@ from typing import Iterable, Set, List, Tuple
 
 import aiogram  # type: ignore
 
-from bot import context, views, types, birthdays_table, utils
+from bot import context, views, types, birthdays_table, utils, exceptions
 
 MonthDay = Tuple[int, int]
 
 _DAILY_BIRTHDAY_NOTIFICATION = 'daily_birthday_notification'
+_TABLE_DATA_HASH_KEY = 'table_data_hash'
 
 
 def _as_month_day(annual_date: types.AnnualDate) -> MonthDay:
@@ -67,9 +68,7 @@ async def _notify_about_birthdays_today(
     await ctx.bot_wrapper.notify(message)
 
 
-def _get_data_from_google_table(
-        ctx: context.Context,
-) -> Tuple[List[types.Birthday], List[birthdays_table.ParseError]]:
+def _get_data_from_google_table(ctx: context.Context):
     try:
         raw_data = ctx.google_sheets_client.get_data(
             ranges=[ctx.config['google_sheets_sheet_name']],
@@ -83,7 +82,7 @@ def _get_data_from_google_table(
 async def handle_birthdays_today(
         ctx: context.Context, message: aiogram.types.Message,
 ):
-    birthdays, errors = _get_data_from_google_table(ctx)
+    birthdays, errors, _ = _get_data_from_google_table(ctx)
     now = utils.now_local()
     await _notify_about_birthdays_today(ctx, now, birthdays)
 
@@ -113,20 +112,40 @@ def _should_notify(
     return True
 
 
+def _should_notify_about_errors(ctx: context.Context, new_hash: int):
+    try:
+        old_hash = ctx.db.get_cache_value(_TABLE_DATA_HASH_KEY)
+    except exceptions.NoSuchData:
+        return True
+
+    return old_hash != str(new_hash)
+
+
+async def notify_about_errors(
+        ctx: context.Context,
+        data_hash: int,
+        errors: Iterable[types.TableParseError],
+):
+    if not _should_notify_about_errors(ctx, data_hash):
+        return
+
+    await ctx.bot_wrapper.notify(
+        views.notify.build_errors_notification(errors)
+    )
+
+    ctx.db.add_cache_value(_TABLE_DATA_HASH_KEY, str(data_hash))
+
+
 async def do_periodic_stuff(ctx: context.Context):
     now = utils.now_local()
-    birthdays, errors = _get_data_from_google_table(ctx)
+    birthdays, errors, data_hash = _get_data_from_google_table(ctx)
 
     if errors != []:
-        # TODO: notify about errors
-        pass
+        await notify_about_errors(ctx, data_hash, errors)
 
     notification_time = utils.parse_daytime(ctx.config['notification_time'])
     if _should_notify(
-            ctx,
-            now,
-            notification_time,
-            _DAILY_BIRTHDAY_NOTIFICATION,
+            ctx, now, notification_time, _DAILY_BIRTHDAY_NOTIFICATION,
     ):
         await _notify_about_birthdays_today(ctx, now, birthdays)
         ctx.db.set_last_notified(_DAILY_BIRTHDAY_NOTIFICATION, now)

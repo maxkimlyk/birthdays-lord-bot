@@ -36,13 +36,19 @@ def now_local() -> datetime.datetime:
     if _MOCK_TIME.local is not None:
         return _MOCK_TIME.local
 
-    from_zone = dateutil.tz.tzutc()
-    to_zone = dateutil.tz.tzlocal()
-    utc = now_utc()
-    utc = utc.replace(tzinfo=from_zone)
-    return utc.astimezone(to_zone)
+    # from_zone = dateutil.tz.tzutc()
+    # to_zone = dateutil.tz.tzlocal()
+    # utc = now_utc()
+    # utc = utc.replace(tzinfo=from_zone)
+    # return utc.astimezone(to_zone)
+    return now_utc()
 
+
+def get_local_timezone():
+    return dateutil.tz.tzlocal()
 
 def parse_daytime(timestr: str) -> datetime.time:
     dt = datetime.datetime.strptime(timestr, '%H:%M')
     return datetime.time(hour=dt.hour, minute=dt.minute)
+
+

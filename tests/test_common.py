@@ -8,7 +8,11 @@ MOCK_MESSAGE_ID = 19
 MOCK_QUERY_ID = 12
 MOCK_USER_ID = 228
 
-MOCK_CONFIG = {'telegram_user_id': MOCK_USER_ID, 'google_sheets_sheet_name': 'sheet_name'}
+MOCK_CONFIG = {
+    'telegram_user_id': MOCK_USER_ID,
+    'google_sheets_sheet_name': 'sheet_name',
+    'notification_time': '07:00',
+}
 
 
 class Chat:

@@ -90,7 +90,7 @@ async def test_handle_birthdays_today(
     ],
 )
 @pytest.mark.asyncio
-async def test_periodic_notification(
+async def test_periodic_birthday_today_notification(
         mock_context,
         mock_time,
         now,
@@ -100,6 +100,23 @@ async def test_periodic_notification(
         should_notify,
 ):
     mock_time.set_local(now)
+    # TODO: use birthday data
     mock_context.config['notification_time'] = notification_time
     await dialogs_birthdays.do_periodic_stuff(mock_context)
     assert len(mock_context.bot.messages) == int(should_notify)
+
+
+@pytest.mark.parametrize(
+    'birthdays_data',
+    ([['John', '01 feb 202020']]),
+)
+@pytest.mark.asyncio
+async def test_periodic_errors_notification(
+        mock_context,
+        mock_time,
+        birthdays_data,
+):
+    mock_context.google_sheets_client.data = birthdays_data
+    await dialogs_birthdays.do_periodic_stuff(mock_context)
+    assert mock_context.bot.messages[0].text.startswith("Обнаружены ошибки в таблице")
+

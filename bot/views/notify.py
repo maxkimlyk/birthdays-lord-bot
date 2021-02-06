@@ -1,5 +1,5 @@
 import dataclasses
-from typing import List, Optional
+from typing import List, Optional, Iterable
 
 from . import common
 from bot import types
@@ -47,3 +47,15 @@ def build_birthdays_today_notification(birthdays: List[BirthdayShowParams]) -> t
         )
 
     return types.Response(text, common.PARSE_MODE_HTML)
+
+
+def build_errors_notification(errors: Iterable[types.TableParseError]) -> types.Response:
+    if errors == []:
+        return types.Response("Нет ошибок")
+
+    text = (
+        "Обнаружены ошибки в таблице:\n" +
+        "\n".join((e.description for e in errors))
+    )
+
+    return types.Response(text)
