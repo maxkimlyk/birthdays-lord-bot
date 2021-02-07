@@ -5,7 +5,7 @@ import yaml
 _ENV_MAPPING_TO_CONFIG_KEYS = {
     'TELEGRAM_API_TOKEN': 'telegram_api_token',
     'TELEGRAM_USER_ID': 'telegram_user_id',
-    'GOOGLE_SHEETS_CREDENTIALS_PATH': 'google_sheets_credentials_path',
+    'GOOGLE_SHEETS_CREDENTIALS_FILE': 'google_sheets_credentials_file',
     'GOOGLE_SHEETS_SPREADSHEET_ID': 'google_sheets_spreadsheet_id',
     'GOOGLE_SHEETS_SHEET_NAME': 'google_sheets_sheet_name',
     'DEVMODE': 'devmode',
@@ -13,6 +13,7 @@ _ENV_MAPPING_TO_CONFIG_KEYS = {
 
 _DEFAULT_VALUES = {
   'db_path': '/var/cache/birthday-lord-bot/db.db',
+  'cache_dir': '/var/cache/birthday-lord-bot/'
 }
 
 

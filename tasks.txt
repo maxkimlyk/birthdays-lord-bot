@@ -2,7 +2,12 @@
 [x] optional devmode
 [x] add linters
 [x] why does bot send notifications second time when restarted
-[ ] more convenient setting of credentials file
+[x] more convenient setting of credentials file
+[ ] allow 1 cell rows in data table
 [ ] impl weekly notifications
 [ ] support many users
 [ ] impl runtime settings
+[ ] better readme
+[ ] get sheet name from spreadsheet properties
+[ ] localizations? now some handlers is in english, some in russian
+[ ] list birthdays

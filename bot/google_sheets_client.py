@@ -1,8 +1,9 @@
 import logging
+from typing import Mapping, Any
 
-import httplib2 # type: ignore
-import apiclient.discovery # type: ignore
-from oauth2client.service_account import ServiceAccountCredentials # type: ignore
+import httplib2  # type: ignore
+import apiclient.discovery  # type: ignore
+import oauth2client.service_account   # type: ignore
 
 
 class CheckFailed(BaseException):
@@ -12,16 +13,24 @@ class CheckFailed(BaseException):
 class GoogleSheetsClient:
     @staticmethod
     def _create_api(credentials_file_path: str):
-        credentials = ServiceAccountCredentials.from_json_keyfile_name(
-            credentials_file_path,
-            ['https://www.googleapis.com/auth/spreadsheets'],
+        credentials = (
+            oauth2client.service_account.ServiceAccountCredentials.from_json_keyfile_name(
+                credentials_file_path,
+                ['https://www.googleapis.com/auth/spreadsheets'],
+            )
         )
 
         http_auth = credentials.authorize(httplib2.Http())
         return apiclient.discovery.build('sheets', 'v4', http=http_auth)
 
-    def __init__(self, credentials_file_path: str, spreadsheet_id: str):
-        self._api = self._create_api(credentials_file_path)
+    def __init__(self, config: Mapping[str, Any]):
+        cred_file_path = (
+            config['cache_dir']
+            + '/'
+            + config['google_sheets_credentials_file']
+        )
+        spreadsheet_id = config['google_sheets_spreadsheet_id']
+        self._api = self._create_api(cred_file_path)
         self._spreadsheet_id = spreadsheet_id
 
         self._check_get_data()
