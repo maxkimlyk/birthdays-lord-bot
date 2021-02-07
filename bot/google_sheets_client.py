@@ -1,9 +1,10 @@
 import logging
+import os
 from typing import Mapping, Any
 
 import httplib2  # type: ignore
 import apiclient.discovery  # type: ignore
-import oauth2client.service_account   # type: ignore
+import oauth2client.service_account  # type: ignore
 
 
 class CheckFailed(BaseException):
@@ -24,10 +25,8 @@ class GoogleSheetsClient:
         return apiclient.discovery.build('sheets', 'v4', http=http_auth)
 
     def __init__(self, config: Mapping[str, Any]):
-        cred_file_path = (
-            config['cache_dir']
-            + '/'
-            + config['google_sheets_credentials_file']
+        cred_file_path = os.path.join(
+            config['cache_dir'], config['google_sheets_credentials_file'],
         )
         spreadsheet_id = config['google_sheets_spreadsheet_id']
         self._api = self._create_api(cred_file_path)
