@@ -1,7 +1,5 @@
-from typing import Tuple
-
-from . import common
 from bot import types
+from . import common
 
 
 def build_response() -> types.Response:

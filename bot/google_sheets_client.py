@@ -17,8 +17,8 @@ class GoogleSheetsClient:
             ['https://www.googleapis.com/auth/spreadsheets'],
         )
 
-        httpAuth = credentials.authorize(httplib2.Http())
-        return apiclient.discovery.build('sheets', 'v4', http=httpAuth)
+        http_auth = credentials.authorize(httplib2.Http())
+        return apiclient.discovery.build('sheets', 'v4', http=http_auth)
 
     def __init__(self, credentials_file_path: str, spreadsheet_id: str):
         self._api = self._create_api(credentials_file_path)

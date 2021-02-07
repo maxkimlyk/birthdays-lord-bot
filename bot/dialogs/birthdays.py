@@ -1,6 +1,6 @@
 import datetime
 import logging
-from typing import Iterable, Set, List, Tuple
+from typing import Iterable, Set, List, Tuple, Optional
 
 import aiogram  # type: ignore
 
@@ -71,16 +71,16 @@ def _get_data_from_google_table(ctx: context.Context):
         raw_data = ctx.google_sheets_client.get_data(
             ranges=[ctx.config['google_sheets_sheet_name']],
         )
-    except BaseException as e:
+    except BaseException:
         logging.exception('Got exception during checking google table')
         raise
     return birthdays_table.parse(raw_data)
 
 
 async def handle_birthdays_today(
-        ctx: context.Context, message: aiogram.types.Message,
+        ctx: context.Context, _: aiogram.types.Message,
 ):
-    birthdays, errors, _ = _get_data_from_google_table(ctx)
+    birthdays, _, _ = _get_data_from_google_table(ctx)
     now = utils.now_local()
     birthdays_to_notify = select_birthdays_today(now, birthdays)
     await _notify_about_birthdays_today(ctx, now, birthdays_to_notify)
@@ -126,25 +126,25 @@ async def notify_about_errors(
         errors: Iterable[types.TableParseError],
 ):
     if not _should_notify_about_errors(ctx, data_hash):
-        logging.debug("Shouldn't notify about errors")
+        logging.debug('Shouldn\'t notify about errors')
         return
 
-    logging.info("Notifying about errors")
+    logging.info('Notifying about errors')
     await ctx.bot_wrapper.notify(
-        views.notify.build_errors_notification(errors)
+        views.notify.build_errors_notification(errors),
     )
 
     ctx.db.add_cache_value(_TABLE_DATA_HASH_KEY, str(data_hash))
 
 
 async def do_periodic_stuff(ctx: context.Context):
-    logging.debug("Start periodic stuff")
+    logging.debug('Start periodic stuff')
 
     now = utils.now_local()
     birthdays, errors, data_hash = _get_data_from_google_table(ctx)
 
-    logging.debug("Birthdays: %s", birthdays)
-    logging.debug("Errors: %s", errors)
+    logging.debug('Birthdays: %s', birthdays)
+    logging.debug('Errors: %s', errors)
 
     if errors != []:
         await notify_about_errors(ctx, data_hash, errors)

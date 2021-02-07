@@ -1,6 +1,6 @@
-from bot import context, types, utils
-
 import aiogram  # type: ignore
+
+from bot import context, types, utils
 
 
 async def get_data(ctx: context.Context, message: aiogram.types.Message):
@@ -13,5 +13,5 @@ async def get_data(ctx: context.Context, message: aiogram.types.Message):
 
 
 async def get_datetime(ctx: context.Context, message: aiogram.types.Message):
-    text = utils.now_local().strftime("%Y-%m-%d %H:%M:%S")
+    text = utils.now_local().strftime('%Y-%m-%d %H:%M:%S')
     await ctx.bot_wrapper.reply(message, types.Response(text))

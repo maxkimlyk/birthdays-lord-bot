@@ -1,8 +1,8 @@
 import dataclasses
 from typing import List, Optional, Iterable
 
-from . import common
 from bot import types
+from . import common
 
 
 @dataclasses.dataclass
@@ -13,13 +13,13 @@ class BirthdayShowParams:
 
 def _build_age_text_postfix(age: int):
     rest100 = age % 100
-    if 10 <= age and age < 19:
+    if 10 <= rest100 < 19:
         return "лет"
 
     rest10 = age % 10
     if rest10 == 1:
         return "год"
-    elif 2 <= rest10 and rest10 <= 4:
+    if 2 <= rest10 <= 4:
         return "года"
     return "лет"
 

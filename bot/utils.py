@@ -1,5 +1,4 @@
 import dataclasses
-import typing
 import datetime
 from typing import Optional
 
@@ -50,5 +49,3 @@ def get_local_timezone():
 def parse_daytime(timestr: str) -> datetime.time:
     dt = datetime.datetime.strptime(timestr, '%H:%M')
     return datetime.time(hour=dt.hour, minute=dt.minute)
-
-

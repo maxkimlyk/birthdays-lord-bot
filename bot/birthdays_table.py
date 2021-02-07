@@ -1,4 +1,3 @@
-import dataclasses
 from typing import Optional, List, Tuple
 
 from . import types
@@ -31,8 +30,8 @@ def _is_empty_row(row: List[str]) -> bool:
 def _parse_int(raw: str) -> int:
     try:
         return int(raw)
-    except ValueError:
-        raise ParseError('Expected integer value')
+    except ValueError as e:
+        raise ParseError('Expected integer value') from e
 
 
 def _parse_day(day_raw: str, max_day_in_month: int) -> int:

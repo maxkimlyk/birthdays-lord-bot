@@ -99,15 +99,15 @@ def register_handlers(ctx: context.Context):
     def register_handler(handler, *args, **kwargs):
         ctx.dp.register_message_handler(wrap_f(handler), *args, **kwargs)
 
-    def register_kb_callback(handler, *args, **kwargs):
-        ctx.dp.register_callback_query_handler(
-            wrap_f(handler), *args, **kwargs,
-        )
+    # def register_kb_callback(handler, *args, **kwargs):
+    #     ctx.dp.register_callback_query_handler(
+    #         wrap_f(handler), *args, **kwargs,
+    #     )
 
     register_handler(start.start, commands=['start', 'help'])
     register_handler(birthdays.handle_birthdays_today, commands=['today'])
 
     if 'devmode' in ctx.config and bool(ctx.config['devmode']):
-        logging.info("DEVMODE enabled")
+        logging.info('DEVMODE enabled')
         register_handler(devmode.get_data, commands=['get_data'])
         register_handler(devmode.get_datetime, commands=['get_datetime'])

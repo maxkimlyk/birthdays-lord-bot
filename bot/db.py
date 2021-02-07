@@ -1,8 +1,6 @@
 import datetime
-import json
 import sqlite3
 import logging
-from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from . import exceptions
 
@@ -48,19 +46,17 @@ class Db:
 
     def add_cache_value(self, key: str, value: str):
         self._connection.execute(
-            'INSERT OR REPLACE INTO cache(key, value) '
-            'VALUES (?, ?)',
+            'INSERT OR REPLACE INTO cache(key, value) ' 'VALUES (?, ?)',
             (key, value),
         )
         self._connection.commit()
 
     def get_cache_value(self, key: str):
         fetched = self._connection.execute(
-            'SELECT value FROM cache WHERE key = ?',
-            (key,),
+            'SELECT value FROM cache WHERE key = ?', (key,),
         ).fetchone()
 
         if fetched is None:
-            raise exceptions.NoSuchData("No value with key {}".format(key))
+            raise exceptions.NoSuchData('No value with key {}'.format(key))
 
         return fetched[0]
