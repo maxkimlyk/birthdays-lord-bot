@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# all paths are inside container
+# This script starts first after container initialization.
+
 CACHE_DIR="/var/cache/birthday-lord-bot"
 DB_FILE="$CACHE_DIR/db.db"
 

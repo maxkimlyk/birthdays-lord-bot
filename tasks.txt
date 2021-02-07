@@ -3,7 +3,7 @@
 [x] add linters
 [x] why does bot send notifications second time when restarted
 [x] more convenient setting of credentials file
-[ ] allow 1 cell rows in data table
+[x] allow 1 cell rows in data table
 [ ] impl weekly notifications
 [ ] support many users
 [ ] impl runtime settings

@@ -30,7 +30,6 @@ def test_parse_row(row, expected):
 @pytest.mark.parametrize(
     'row,expected_error',
     [
-        (['John Balls'], 'Unexpected row length. At least 2 cells expected'),
         (['John', '1/01/1990'], 'Unexpected date format'),
         (['John', '01.01.01.1990'], 'Unexpected date format'),
         (['John', '000 1.01.1990'], 'Expected integer value'),

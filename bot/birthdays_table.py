@@ -76,7 +76,7 @@ def parse_row(row: List[str]) -> Optional[types.Birthday]:
         return None
 
     if len(row) < 2:
-        raise ParseError('Unexpected row length. At least 2 cells expected')
+        return None
 
     person_name = row[0].strip()
     if person_name == '':
