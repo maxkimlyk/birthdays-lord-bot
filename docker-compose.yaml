@@ -5,9 +5,11 @@ services:
     volumes:
       - ./cache:/var/cache
     environment:
-      TELEGRAM_API_TOKEN: ${TELEGRAM_API_TOKEN}
-      TELEGRAM_USER_ID: ${TELEGRAM_USER_ID}
-      GOOGLE_SHEETS_CREDENTIALS_PATH: ${GOOGLE_SHEETS_CREDENTIALS_PATH}
-      GOOGLE_SHEETS_SPREADSHEET_ID: ${GOOGLE_SHEETS_SPREADSHEET_ID}
+      - TELEGRAM_API_TOKEN
+      - TELEGRAM_USER_ID
+      - GOOGLE_SHEETS_CREDENTIALS_PATH
+      - GOOGLE_SHEETS_SPREADSHEET_ID
+      - GOOGLE_SHEETS_SHEET_NAME
+      - DEVMODE
     network_mode: "host"
     restart: unless-stopped

@@ -107,5 +107,7 @@ def register_handlers(ctx: context.Context):
     register_handler(start.start, commands=['start', 'help'])
     register_handler(birthdays.handle_birthdays_today, commands=['today'])
 
-    register_handler(devmode.get_data, commands=['get_data'])
-    register_handler(devmode.get_datetime, commands=['get_datetime'])
+    if 'devmode' in ctx.config and bool(ctx.config['devmode']):
+        logging.info("DEVMODE enabled")
+        register_handler(devmode.get_data, commands=['get_data'])
+        register_handler(devmode.get_datetime, commands=['get_datetime'])
