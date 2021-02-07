@@ -1,0 +1,5 @@
+[ ] set timezone inside docker
+[ ] more convenient setting of credentials file
+[ ] impl weekly notifications
+[ ] support many users
+[ ] impl runtime settings
