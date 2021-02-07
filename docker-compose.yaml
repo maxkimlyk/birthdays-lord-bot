@@ -3,7 +3,7 @@ services:
   bot:
     build: .
     volumes:
-      - ./cache:/var/cache/birthday-lord-bot
+      - ./cache:/var/cache/birthdays-lord-bot
     environment:
       - TELEGRAM_API_TOKEN
       - TELEGRAM_USER_ID

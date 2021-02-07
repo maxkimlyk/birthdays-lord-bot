@@ -2,7 +2,7 @@
 
 # This script starts first after container initialization.
 
-CACHE_DIR="/var/cache/birthday-lord-bot"
+CACHE_DIR="/var/cache/birthdays-lord-bot"
 DB_FILE="$CACHE_DIR/db.db"
 
 if [[ ! -d "$CACHE_DIR" ]]

@@ -5,7 +5,7 @@ from . import common
 def build_response() -> types.Response:
     text = (
         'Hello!\n'
-        'I\'m your humble Birthday Lord. I\'ll send your everyday notifications about '
+        'I\'m your humble Birthdays Lord. I\'ll send your everyday notifications about '
         'who celebrate his birthday today.'
     )
 

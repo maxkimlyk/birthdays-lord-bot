@@ -12,8 +12,8 @@ _ENV_MAPPING_TO_CONFIG_KEYS = {
 }
 
 _DEFAULT_VALUES = {
-  'db_path': '/var/cache/birthday-lord-bot/db.db',
-  'cache_dir': '/var/cache/birthday-lord-bot/'
+  'db_path': '/var/cache/birthdays-lord-bot/db.db',
+  'cache_dir': '/var/cache/birthdays-lord-bot/'
 }
 
 

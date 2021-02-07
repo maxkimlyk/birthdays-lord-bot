@@ -1,10 +1,10 @@
-# Birthday Lord Bot
+# Birthdays Lord Bot
 Is a telegram bot that will remind you about your friends' birthdays.
 
 # How to use
 1. Create _cache_ directory.
 ```bash
-birthday-lord-bot$ mkdir cache
+birthdays-lord-bot$ mkdir cache
 ```
 
 2. Place Goggle Sheets Service account json key file into created directory _cache_  (see instructions how to get it below)
@@ -17,7 +17,7 @@ birthday-lord-bot$ mkdir cache
 
 5. Run docker.
 ```bash
-birthday-lord-bot$ docker-compose run --build -d
+birthdays-lord-bot$ docker-compose run --build -d
 ```
 
 # How to get Google Sheets API service account
