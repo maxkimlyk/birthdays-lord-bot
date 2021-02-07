@@ -115,8 +115,14 @@ def _should_notify_about_errors(ctx: context.Context, new_hash: int):
     try:
         old_hash = ctx.db.get_cache_value(_TABLE_DATA_HASH_KEY)
     except exceptions.NoSuchData:
+        logging.debug(
+            'No saved table data hash in db, consider that data is new',
+        )
         return True
 
+    logging.debug(
+        'Checking table data hash. Old: "%s" , new: "%s"', old_hash, new_hash,
+    )
     return old_hash != str(new_hash)
 
 

@@ -1,3 +1,6 @@
+import base64
+import hashlib
+
 from typing import Optional, List, Tuple
 
 from . import types
@@ -85,17 +88,18 @@ def parse_row(row: List[str]) -> Optional[types.Birthday]:
     return types.Birthday(date, person_name)
 
 
-def _get_hash(rows: List[List[str]]) -> int:
-    h = 0
+def _get_hash(rows: List[List[str]]) -> str:
+    h = hashlib.sha256()
     for row in rows:
         for value in row:
-            h = h ^ hash(value)
-    return h
+            h.update(value.encode('utf-8'))
+    hash_bytes = h.digest()
+    return base64.b64encode(hash_bytes).decode('utf-8')
 
 
 def parse(
         rows: List[List[str]],
-) -> Tuple[List[types.Birthday], List[types.TableParseError], int]:
+) -> Tuple[List[types.Birthday], List[types.TableParseError], str]:
     result = []
     errors = []
 
@@ -106,9 +110,7 @@ def parse(
                 result.append(birthday)
         except ParseError as e:
             errors.append(
-                types.TableParseError(
-                    'Row #{}: {}'.format(i + 1, str(e)),
-                ),
+                types.TableParseError('Row #{}: {}'.format(i + 1, str(e))),
             )
 
     return result, errors, _get_hash(rows)

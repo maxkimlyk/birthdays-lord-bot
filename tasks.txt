@@ -1,7 +1,7 @@
 [x] set timezone inside docker
 [x] optional devmode
 [x] add linters
-[ ] why does bot send notifications second time when restarted
+[x] why does bot send notifications second time when restarted
 [ ] more convenient setting of credentials file
 [ ] impl weekly notifications
 [ ] support many users
