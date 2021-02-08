@@ -76,19 +76,6 @@ def _build_birthday_show_parameters(
     return [transform(bd) for bd in birthdays]
 
 
-async def _notify_about_birthdays_today(
-        ctx: context.Context,
-        now: datetime.datetime,
-        birthdays_to_notify: List[types.Birthday],
-):
-    logging.info('Notifying about birthdays: %s', birthdays_to_notify)
-
-    message = views.notify.build_birthdays_today_notification(
-        _build_birthday_show_parameters(birthdays_to_notify, now.year),
-    )
-    await ctx.bot_wrapper.notify(message)
-
-
 def _get_data_from_google_table(ctx: context.Context):
     try:
         raw_data = ctx.google_sheets_client.get_data(
@@ -124,36 +111,18 @@ def _should_notify_about_today(
     return True
 
 
-def _should_notify_about_errors(ctx: context.Context, new_hash: int):
-    try:
-        old_hash = ctx.db.get_cache_value(_TABLE_DATA_HASH_KEY)
-    except exceptions.NoSuchData:
-        logging.debug(
-            'No saved table data hash in db, consider that data is new',
-        )
-        return True
-
-    logging.debug(
-        'Checking table data hash. Old: "%s" , new: "%s"', old_hash, new_hash,
-    )
-    return old_hash != str(new_hash)
-
-
-async def notify_about_errors(
+async def _notify_about_today(
         ctx: context.Context,
-        data_hash: int,
-        errors: Iterable[types.TableParseError],
+        now: datetime.datetime,
+        birthdays: List[types.Birthday],
+        notify_on_empty_list: bool
 ):
-    if not _should_notify_about_errors(ctx, data_hash):
-        logging.debug('Shouldn\'t notify about errors')
-        return
-
-    logging.info('Notifying about errors')
-    await ctx.bot_wrapper.notify(
-        views.notify.build_errors_notification(errors),
-    )
-
-    ctx.db.add_cache_value(_TABLE_DATA_HASH_KEY, str(data_hash))
+    birthdays_to_notify = select_birthdays_today(now, birthdays)
+    if birthdays_to_notify != [] or notify_on_empty_list:
+        message = views.notify.build_birthdays_today_notification(
+            _build_birthday_show_parameters(birthdays_to_notify, now.year),
+        )
+        await ctx.bot_wrapper.notify(message)
 
 
 def _should_notify_about_next_week(
@@ -186,17 +155,50 @@ def _should_notify_about_next_week(
     return True
 
 
-async def _notify_about_birthdays_next_week(
+async def _notify_about_next_week(
         ctx: context.Context,
         now: datetime.datetime,
-        birthdays_to_notify: List[types.Birthday],
+        birthdays: List[types.Birthday],
+        notify_on_empty_list: bool,
 ):
-    logging.info('Notifying weekly')
+    birthdays_to_notify = select_birthdays_next_week(now, birthdays)
+    if birthdays_to_notify != [] or notify_on_empty_list:
+        message = views.notify.build_birthdays_weekly_notification(
+            _build_birthday_show_parameters(birthdays_to_notify, now.year),
+        )
+        await ctx.bot_wrapper.notify(message)
 
-    message = views.notify.build_birthdays_weekly_notification(
-        _build_birthday_show_parameters(birthdays_to_notify, now.year),
+
+def _should_notify_about_errors(ctx: context.Context, new_hash: str):
+    try:
+        old_hash = ctx.db.get_cache_value(_TABLE_DATA_HASH_KEY)
+    except exceptions.NoSuchData:
+        logging.debug(
+            'No saved table data hash in db, consider that data is new',
+        )
+        return True
+
+    logging.debug(
+        'Checking table data hash. Old: "%s" , new: "%s"', old_hash, new_hash,
     )
-    await ctx.bot_wrapper.notify(message)
+    return old_hash != new_hash
+
+
+async def notify_about_errors(
+        ctx: context.Context,
+        data_hash: str,
+        errors: Iterable[types.TableParseError],
+):
+    if not _should_notify_about_errors(ctx, data_hash):
+        logging.debug('Shouldn\'t notify about errors')
+        return
+
+    logging.info('Notifying about errors')
+    await ctx.bot_wrapper.notify(
+        views.notify.build_errors_notification(errors),
+    )
+
+    ctx.db.add_cache_value(_TABLE_DATA_HASH_KEY, str(data_hash))
 
 
 async def do_periodic_stuff(ctx: context.Context):
@@ -214,15 +216,13 @@ async def do_periodic_stuff(ctx: context.Context):
     notification_time = utils.parse_daytime(ctx.config['notification_time'])
 
     if _should_notify_about_next_week(ctx, now, notification_time):
-        birthdays_to_notify = select_birthdays_next_week(now, birthdays)
-        if birthdays_to_notify != []:
-            await _notify_about_birthdays_next_week(ctx, now, birthdays_to_notify)
+        await _notify_about_next_week(
+            ctx, now, birthdays, notify_on_empty_list=False,
+        )
         ctx.db.set_last_notified(_WEEKLY_NOTIFICATION, now)
 
     if _should_notify_about_today(ctx, now, notification_time):
-        birthdays_to_notify = select_birthdays_today(now, birthdays)
-        if birthdays_to_notify != []:
-            await _notify_about_birthdays_today(ctx, now, birthdays_to_notify)
+        await _notify_about_today(ctx, now, birthdays, notify_on_empty_list=False)
         ctx.db.set_last_notified(_DAILY_BIRTHDAY_NOTIFICATION, now)
 
 
@@ -231,8 +231,7 @@ async def handle_birthdays_today(
 ):
     birthdays, _, _ = _get_data_from_google_table(ctx)
     now = utils.now_local()
-    birthdays_to_notify = select_birthdays_today(now, birthdays)
-    await _notify_about_birthdays_today(ctx, now, birthdays_to_notify)
+    await _notify_about_today(ctx, now, birthdays, notify_on_empty_list=True)
 
 
 async def handle_birthdays_next_week(
@@ -240,5 +239,4 @@ async def handle_birthdays_next_week(
 ):
     birthdays, _, _ = _get_data_from_google_table(ctx)
     now = utils.now_local()
-    birthdays_to_notify = select_birthdays_next_week(now, birthdays)
-    await _notify_about_birthdays_next_week(ctx, now, birthdays_to_notify)
+    await _notify_about_next_week(ctx, now, birthdays, notify_on_empty_list=True)
