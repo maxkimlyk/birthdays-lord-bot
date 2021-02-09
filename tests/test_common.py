@@ -9,15 +9,20 @@ MOCK_QUERY_ID = 12
 MOCK_USER_ID = 228
 
 MOCK_CONFIG = {
-    'telegram_user_id': MOCK_USER_ID,
+    'telegram_user_ids': [MOCK_USER_ID],
     'google_sheets_sheet_name': 'sheet_name',
     'notification_time': '07:00',
 }
 
 
-class Chat:
+class MockChat:
     def __init__(self, chat_id):
         self.id = chat_id
+
+
+class MockUser:
+    def __init__(self, user_id):
+        self.id = user_id
 
 
 class MockMessage:
@@ -25,26 +30,16 @@ class MockMessage:
             self,
             text,
             chat_id=MOCK_CHAT_ID,
+            user_id=MOCK_USER_ID,
             parse_mode=None,
             reply_markup=None,
     ):
         self.message_id = MOCK_MESSAGE_ID
-        self.chat = Chat(chat_id)
+        self.chat = MockChat(chat_id)
+        self.from_user = MockUser(user_id),
         self.text = text
         self.parse_mode = parse_mode
         self.reply_markup = reply_markup
-
-    def get_buttons(self):
-        if self.reply_markup is None:
-            return None
-
-        result = []
-        rows = self.reply_markup.inline_keyboard
-        for row in rows:
-            for btn in row:
-                payload = buttons.parse_payload(btn.callback_data)
-                result.append((btn.text, payload))
-        return result
 
 
 class MockState:
@@ -53,13 +48,6 @@ class MockState:
 
     async def finish(self):
         self.finished = True
-
-
-class MockButtonQuery:
-    def __init__(self, payload):
-        self.id = MOCK_QUERY_ID
-        self.data = buttons.make_payload(payload)
-        self.message = MockMessage('')
 
 
 class MockBot:
@@ -103,7 +91,7 @@ class MockContext:
         self.db = db.Db(db_path)
         self.bot = MockBot()
         self.google_sheets_client = MockGoogleSheetsClient()
-        self.bot_wrapper = bot_wrapper.BotWrapper(self.bot, self.config)
+        self.bot_wrapper = bot_wrapper.BotWrapper(self.bot)
 
 
 class TimeMocker:

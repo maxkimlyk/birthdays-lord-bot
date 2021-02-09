@@ -1,5 +1,7 @@
 telegram_api_token: add_me!
-telegram_user_id: add_me!
+telegram_user_ids:
+  - user_id_1
+  - user_id_2
 google_sheets_credentials_file: google_sheets_credentials.json
 google_sheets_spreadsheet_id: add_me!
 google_sheets_sheet_name: birthdays

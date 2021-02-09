@@ -7,6 +7,10 @@ from . import exceptions
 _DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 
 
+# Cache keys
+CACHE_TABLE_DATA_HASH = 'table_data_hash'
+
+
 def _format_datetime(time: datetime.datetime) -> str:
     return time.strftime(_DATETIME_FORMAT)
 
@@ -21,19 +25,19 @@ class Db:
         self._connection.row_factory = sqlite3.Row
 
     def set_last_notified(
-            self, notification_id: str, last_notified: datetime.datetime,
+            self, notification_id: str, user_id: int, last_notified: datetime.datetime,
     ):
         self._connection.execute(
-            'INSERT OR REPLACE INTO notifications(id, last_notified) '
-            'VALUES (?, ?)',
-            (notification_id, _format_datetime(last_notified)),
+            'INSERT OR REPLACE INTO notifications(id, user_id, last_notified) '
+            'VALUES (?, ?, ?)',
+            (notification_id, user_id, _format_datetime(last_notified)),
         )
         self._connection.commit()
 
-    def get_last_notified(self, notification_id: str) -> datetime.datetime:
+    def get_last_notified(self, notification_id: str, user_id: int) -> datetime.datetime:
         fetched = self._connection.execute(
-            'SELECT last_notified FROM notifications WHERE id = ?',
-            (notification_id,),
+            'SELECT last_notified FROM notifications WHERE id = ? AND user_id = ?',
+            (notification_id, user_id),
         ).fetchone()
 
         if fetched is not None:
@@ -44,16 +48,17 @@ class Db:
 
         return datetime.datetime.min
 
-    def add_cache_value(self, key: str, value: str):
+    def add_cache_value(self, key: str, user_id: int, value: str):
         self._connection.execute(
-            'INSERT OR REPLACE INTO cache(key, value) ' 'VALUES (?, ?)',
-            (key, value),
+            'INSERT OR REPLACE INTO cache(key, user_id, value) VALUES (?, ?, ?)',
+            (key, user_id, value),
         )
         self._connection.commit()
 
-    def get_cache_value(self, key: str):
+    def get_cache_value(self, key: str, user_id: int):
         fetched = self._connection.execute(
-            'SELECT value FROM cache WHERE key = ?', (key,),
+            'SELECT value FROM cache WHERE key = ? AND user_id = ?',
+            (key, user_id),
         ).fetchone()
 
         if fetched is None:

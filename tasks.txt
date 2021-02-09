@@ -6,9 +6,12 @@
 [x] allow 1 cell rows in data table
 [x] impl weekly notifications
 [ ] support many users
+  [x] allow store own data for each user
+  [ ] allow each user have own datasheet
 [ ] impl runtime settings
 [ ] better readme
 [ ] get sheet name from spreadsheet properties
 [ ] localizations? now some handlers is in english, some in russian
 [ ] list birthdays
 [ ] set google spreadsheet in runtime
+[ ] fill handlers list and help

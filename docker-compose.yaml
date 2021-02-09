@@ -6,7 +6,7 @@ services:
       - ./cache:/var/cache/birthdays-lord-bot
     environment:
       - TELEGRAM_API_TOKEN
-      - TELEGRAM_USER_ID
+      - TELEGRAM_USER_IDS
       - GOOGLE_SHEETS_CREDENTIALS_FILE
       - GOOGLE_SHEETS_SPREADSHEET_ID
       - GOOGLE_SHEETS_SHEET_NAME

@@ -100,7 +100,7 @@ async def test_handle_birthdays_today(
 ):
     mock_time.set_local(now)
     mock_context.google_sheets_client.data = birthdays_data
-    await dialogs_birthdays.handle_birthdays_today(mock_context, '/today')
+    await dialogs_birthdays.handle_birthdays_today(mock_context, MockMessage('/today'))
     assert mock_context.bot.last_message.text == expected
 
 
@@ -124,7 +124,7 @@ async def test_handle_birthdays_next_week(
 ):
     mock_time.set_local(now)
     mock_context.google_sheets_client.data = birthdays_data
-    await dialogs_birthdays.handle_birthdays_next_week(mock_context, '/today')
+    await dialogs_birthdays.handle_birthdays_next_week(mock_context, MockMessage('/today'))
     assert mock_context.bot.last_message.text == expected
 
 
@@ -168,7 +168,7 @@ async def test_periodic_birthday_today_notification(
     mock_time.set_local(now)
     mock_context.google_sheets_client.data = birthdays_data
     mock_context.db.set_last_notified(
-        dialogs_birthdays._TABLE_DATA_HASH_KEY, last_notification,
+        db.CACHE_TABLE_DATA_HASH, MOCK_USER_ID, last_notification,
     )
     mock_context.config['notification_time'] = notification_time
     await dialogs_birthdays.do_periodic_stuff(mock_context)

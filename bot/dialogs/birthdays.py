@@ -4,13 +4,12 @@ from typing import Iterable, Set, List, Tuple, Optional
 
 import aiogram  # type: ignore
 
-from bot import context, views, types, birthdays_table, utils, exceptions
+from bot import context, views, types, birthdays_table, utils, exceptions, db
 
 MonthDay = Tuple[int, int]
 
 _DAILY_BIRTHDAY_NOTIFICATION = 'daily_birthday_notification'
 _WEEKLY_NOTIFICATION = 'weekly_notification'
-_TABLE_DATA_HASH_KEY = 'table_data_hash'
 
 
 def _as_month_day(annual_date: types.AnnualDate) -> MonthDay:
@@ -89,10 +88,13 @@ def _get_data_from_google_table(ctx: context.Context):
 
 def _should_notify_about_today(
         ctx: context.Context,
+        user_id: int,
         now: datetime.datetime,
         notification_time: datetime.time,
 ) -> bool:
-    last_notified = ctx.db.get_last_notified(_DAILY_BIRTHDAY_NOTIFICATION)
+    last_notified = ctx.db.get_last_notified(
+        _DAILY_BIRTHDAY_NOTIFICATION, user_id,
+    )
 
     today_notification_time = datetime.datetime(
         now.year,
@@ -113,24 +115,26 @@ def _should_notify_about_today(
 
 async def _notify_about_today(
         ctx: context.Context,
+        user_id: int,
         now: datetime.datetime,
         birthdays: List[types.Birthday],
-        notify_on_empty_list: bool
+        notify_on_empty_list: bool,
 ):
     birthdays_to_notify = select_birthdays_today(now, birthdays)
     if birthdays_to_notify != [] or notify_on_empty_list:
         message = views.notify.build_birthdays_today_notification(
             _build_birthday_show_parameters(birthdays_to_notify, now.year),
         )
-        await ctx.bot_wrapper.notify(message)
+        await ctx.bot_wrapper.send(user_id, message)
 
 
 def _should_notify_about_next_week(
         ctx: context.Context,
+        user_id: int,
         now: datetime.datetime,
         notification_time: datetime.time,
 ):
-    last_notified = ctx.db.get_last_notified(_WEEKLY_NOTIFICATION)
+    last_notified = ctx.db.get_last_notified(_WEEKLY_NOTIFICATION, user_id)
 
     monday_same_time = _get_same_time_monday_this_week(now)
 
@@ -157,6 +161,7 @@ def _should_notify_about_next_week(
 
 async def _notify_about_next_week(
         ctx: context.Context,
+        user_id: int,
         now: datetime.datetime,
         birthdays: List[types.Birthday],
         notify_on_empty_list: bool,
@@ -166,12 +171,14 @@ async def _notify_about_next_week(
         message = views.notify.build_birthdays_weekly_notification(
             _build_birthday_show_parameters(birthdays_to_notify, now.year),
         )
-        await ctx.bot_wrapper.notify(message)
+        await ctx.bot_wrapper.send(user_id, message)
 
 
-def _should_notify_about_errors(ctx: context.Context, new_hash: str):
+def _should_notify_about_errors(
+        ctx: context.Context, user_id: int, new_hash: str,
+):
     try:
-        old_hash = ctx.db.get_cache_value(_TABLE_DATA_HASH_KEY)
+        old_hash = ctx.db.get_cache_value(db.CACHE_TABLE_DATA_HASH, user_id)
     except exceptions.NoSuchData:
         logging.debug(
             'No saved table data hash in db, consider that data is new',
@@ -186,22 +193,23 @@ def _should_notify_about_errors(ctx: context.Context, new_hash: str):
 
 async def notify_about_errors(
         ctx: context.Context,
+        user_id: int,
         data_hash: str,
         errors: Iterable[types.TableParseError],
 ):
-    if not _should_notify_about_errors(ctx, data_hash):
+    if not _should_notify_about_errors(ctx, user_id, data_hash):
         logging.debug('Shouldn\'t notify about errors')
         return
 
     logging.info('Notifying about errors')
-    await ctx.bot_wrapper.notify(
-        views.notify.build_errors_notification(errors),
+    await ctx.bot_wrapper.send(
+        user_id, views.notify.build_errors_notification(errors),
     )
 
-    ctx.db.add_cache_value(_TABLE_DATA_HASH_KEY, str(data_hash))
+    ctx.db.add_cache_value(db.CACHE_TABLE_DATA_HASH, user_id, str(data_hash))
 
 
-async def do_periodic_stuff(ctx: context.Context):
+async def _do_periodic_stuff(ctx: context.Context, user_id: int):
     logging.debug('Start periodic stuff')
 
     now = utils.now_local()
@@ -211,32 +219,43 @@ async def do_periodic_stuff(ctx: context.Context):
     logging.debug('Errors: %s', errors)
 
     if errors != []:
-        await notify_about_errors(ctx, data_hash, errors)
+        await notify_about_errors(ctx, user_id, data_hash, errors)
 
     notification_time = utils.parse_daytime(ctx.config['notification_time'])
 
-    if _should_notify_about_next_week(ctx, now, notification_time):
+    if _should_notify_about_next_week(ctx, user_id, now, notification_time):
         await _notify_about_next_week(
-            ctx, now, birthdays, notify_on_empty_list=False,
+            ctx, user_id, now, birthdays, notify_on_empty_list=False,
         )
-        ctx.db.set_last_notified(_WEEKLY_NOTIFICATION, now)
+        ctx.db.set_last_notified(_WEEKLY_NOTIFICATION, user_id, now)
 
-    if _should_notify_about_today(ctx, now, notification_time):
-        await _notify_about_today(ctx, now, birthdays, notify_on_empty_list=False)
-        ctx.db.set_last_notified(_DAILY_BIRTHDAY_NOTIFICATION, now)
+    if _should_notify_about_today(ctx, user_id, now, notification_time):
+        await _notify_about_today(
+            ctx, user_id, now, birthdays, notify_on_empty_list=False,
+        )
+        ctx.db.set_last_notified(_DAILY_BIRTHDAY_NOTIFICATION, user_id, now)
+
+
+async def do_periodic_stuff(ctx: context.Context):
+    for user_id in ctx.config['telegram_user_ids']:
+        await _do_periodic_stuff(ctx, user_id)
 
 
 async def handle_birthdays_today(
-        ctx: context.Context, _: aiogram.types.Message,
+        ctx: context.Context, message: aiogram.types.Message,
 ):
     birthdays, _, _ = _get_data_from_google_table(ctx)
     now = utils.now_local()
-    await _notify_about_today(ctx, now, birthdays, notify_on_empty_list=True)
+    await _notify_about_today(
+        ctx, message.chat.id, now, birthdays, notify_on_empty_list=True,
+    )
 
 
 async def handle_birthdays_next_week(
-        ctx: context.Context, _: aiogram.types.Message,
+        ctx: context.Context, message: aiogram.types.Message,
 ):
     birthdays, _, _ = _get_data_from_google_table(ctx)
     now = utils.now_local()
-    await _notify_about_next_week(ctx, now, birthdays, notify_on_empty_list=True)
+    await _notify_about_next_week(
+        ctx, message.chat.id, now, birthdays, notify_on_empty_list=True,
+    )

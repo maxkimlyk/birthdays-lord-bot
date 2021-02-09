@@ -5,9 +5,7 @@ from typing import Union
 import aiogram  # type: ignore
 
 from bot import context
-from . import start
-from . import devmode
-from . import birthdays
+from . import start, devmode, birthdays
 
 
 async def _not_authorized(
@@ -106,7 +104,9 @@ def register_handlers(ctx: context.Context):
 
     register_handler(start.start, commands=['start', 'help'])
     register_handler(birthdays.handle_birthdays_today, commands=['today'])
-    register_handler(birthdays.handle_birthdays_next_week, commands=['next_week'])
+    register_handler(
+        birthdays.handle_birthdays_next_week, commands=['next_week'],
+    )
 
     if 'devmode' in ctx.config and bool(ctx.config['devmode']):
         logging.info('DEVMODE enabled')
