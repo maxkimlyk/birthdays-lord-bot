@@ -238,7 +238,12 @@ async def _do_periodic_stuff(ctx: context.Context, user_id: int):
 
 async def do_periodic_stuff(ctx: context.Context):
     for user_id in ctx.config['telegram_user_ids']:
-        await _do_periodic_stuff(ctx, user_id)
+        try:
+            await _do_periodic_stuff(ctx, user_id)
+        except BaseException:
+            logging.exception(
+                'Exception during doing priodic stuff for user_id=%s', user_id,
+            )
 
 
 async def handle_birthdays_today(

@@ -9,6 +9,7 @@ _DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 
 # Cache keys
 CACHE_TABLE_DATA_HASH = 'table_data_hash'
+CACHE_SETTINGS = 'settings'
 
 
 def _format_datetime(time: datetime.datetime) -> str:
