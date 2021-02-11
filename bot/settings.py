@@ -41,7 +41,7 @@ class TypeOptionalStr(TypeDescr):
     def __init__(self, default=None):
         self._default = default
 
-    def cast_value(self, value: Any) -> str:
+    def cast_value(self, value: Any) -> Optional[str]:
         if value is None:
             return value
         return str(value)
@@ -52,15 +52,24 @@ class TypeOptionalStr(TypeDescr):
 
 SchemaType = Dict[str, TypeDescr]
 
-_USER_SETTINGS_SCHEMA: SchemaType = {'google_spreadsheet_id': TypeOptionalStr(default=None)}
+_USER_SETTINGS_SCHEMA: SchemaType = {
+    'spreadsheet_id': TypeOptionalStr(default=None),
+}
 
 
 class UserSettings:
-    def __init__(self, db_: db.Db, user_id: int, schema: Optional[SchemaType] = None):
+    def __init__(
+            self,
+            db_: db.Db,
+            user_id: int,
+            schema: Optional[SchemaType] = None,
+    ):
         self._db = db_
         self._user_id = user_id
         self._schema = schema if schema is not None else _USER_SETTINGS_SCHEMA
-        self._settings = self._try_load_settings_from_db(db_, user_id, self._schema)
+        self._settings = self._try_load_settings_from_db(
+            db_, user_id, self._schema,
+        )
 
     @staticmethod
     def _try_load_settings_from_db(
@@ -72,7 +81,9 @@ class UserSettings:
         except exceptions.NoSuchData:
             logging.warning('Settings is missing in db (user_id=%s)', user_id)
         except BaseException:
-            logging.exception("Failed to load settings from df (user=%s)", user_id)
+            logging.exception(
+                'Failed to load settings from df (user=%s)', user_id,
+            )
 
         settings = {}
 

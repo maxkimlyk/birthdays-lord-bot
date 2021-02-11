@@ -5,7 +5,7 @@ from typing import Union
 import aiogram  # type: ignore
 
 from bot import context
-from . import start, devmode, birthdays
+from . import start, devmode, birthdays, settings, user_state
 
 
 async def _not_authorized(
@@ -106,6 +106,14 @@ def register_handlers(ctx: context.Context):
     register_handler(birthdays.handle_birthdays_today, commands=['today'])
     register_handler(
         birthdays.handle_birthdays_next_week, commands=['next_week'],
+    )
+
+    register_handler(
+        settings.handle_set_spreadsheet_id, commands=['set_spreadsheet'],
+    )
+    register_handler(
+        settings.handle_set_spreadsheet_id_step2,
+        state=user_state.UserState.on_set_spreadsheet_id,
     )
 
     if 'devmode' in ctx.config and bool(ctx.config['devmode']):

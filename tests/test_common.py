@@ -1,7 +1,7 @@
 import datetime
 import functools
 
-from bot import bot_wrapper, utils, db
+from bot import bot_wrapper, utils, db, settings
 
 MOCK_CHAT_ID = 1488300
 MOCK_MESSAGE_ID = 19
@@ -36,7 +36,7 @@ class MockMessage:
     ):
         self.message_id = MOCK_MESSAGE_ID
         self.chat = MockChat(chat_id)
-        self.from_user = MockUser(user_id),
+        self.from_user = MockUser(user_id)
         self.text = text
         self.parse_mode = parse_mode
         self.reply_markup = reply_markup
@@ -90,6 +90,7 @@ class MockContext:
         self.authorizer = None
         self.db = db.Db(db_path)
         self.bot = MockBot()
+        self.settings = settings.Settings(self.db)
         self.google_sheets_client = MockGoogleSheetsClient()
         self.bot_wrapper = bot_wrapper.BotWrapper(self.bot)
 
