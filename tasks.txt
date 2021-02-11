@@ -5,12 +5,13 @@
 [x] more convenient setting of credentials file
 [x] allow 1 cell rows in data table
 [x] impl weekly notifications
-[ ] support many users
+[x] support many users
   [x] allow store own data for each user
-  [ ] allow each user have own spreadsheet
+  [x] allow each user have own spreadsheet
 [ ] impl runtime settings
   [x] store settings
   [ ] handlers for changing settings
+[ ] check access to given spreadsheet
 [ ] better readme
 [ ] get sheet name from spreadsheet properties
 [ ] localizations? now some handlers is in english, some in russian

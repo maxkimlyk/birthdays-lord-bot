@@ -11,7 +11,6 @@ birthdays-lord-bot$ mkdir cache
 
 3. Fill in settings in _config.yaml_.
     - `google_sheets_credentials_file` should contain your json key file name from previous step.
-    - `google_sheets_spreadsheet_id` should contain ID of your spreadsheet with birthdays. You can extract it from URL. When you editing spreadsheet in a browser you'll see it inside the address bar: `https://docs.google.com/spreadsheets/d/**SPREADSHEETID**/edit#gid=0`.
 
 4. Add access to read your streadsheet with birthdays for service account.
 

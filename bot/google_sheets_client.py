@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Mapping, Any
+from typing import Mapping, Any, List
 
 import httplib2  # type: ignore
 import apiclient.discovery  # type: ignore
@@ -28,18 +28,15 @@ class GoogleSheetsClient:
         cred_file_path = os.path.join(
             config['cache_dir'], config['google_sheets_credentials_file'],
         )
-        spreadsheet_id = config['google_sheets_spreadsheet_id']
         self._api = self._create_api(cred_file_path)
-        self._spreadsheet_id = spreadsheet_id
 
-        self._check_get_data()
 
-    def get_data(self, ranges):
+    def get_data(self, spreadsheet_id: str, ranges: List[str]) -> List[List[str]]:
         results = (
             self._api.spreadsheets()
             .values()
             .batchGet(
-                spreadsheetId=self._spreadsheet_id,
+                spreadsheetId=spreadsheet_id,
                 ranges=ranges,
                 valueRenderOption='FORMATTED_VALUE',
                 dateTimeRenderOption='FORMATTED_STRING',
@@ -50,12 +47,12 @@ class GoogleSheetsClient:
 
         return rows
 
-    def _check_get_data(self):
-        ranges = 'birthdays'
-        try:
-            self.get_data(ranges)
-        except BaseException as e:
-            logging.exception('Failed to check google sheets client')
-            raise CheckFailed() from e
+    # def _check_get_data(self):
+    #     ranges = 'birthdays'
+    #     try:
+    #         self.get_data(ranges)
+    #     except BaseException as e:
+    #         logging.exception('Failed to check google sheets client')
+    #         raise CheckFailed() from e
 
-        logging.info('Google sheets client check passed')
+    #     logging.info('Google sheets client check passed')

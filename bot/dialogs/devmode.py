@@ -4,7 +4,10 @@ from bot import context, types, utils
 
 
 async def get_data(ctx: context.Context, message: aiogram.types.Message):
-    rows = ctx.google_sheets_client.get_data(ranges='birthdays')
+    user_settings = ctx.settings.get_for_user(message.from_user.id)
+    rows = ctx.google_sheets_client.get_data(
+        user_settings['spreadsheet_id'], ranges=['birthdays'],
+    )
 
     lines = [','.join(r) for r in rows]
     text = '\n'.join(lines)

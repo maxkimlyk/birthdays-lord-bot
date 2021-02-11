@@ -79,7 +79,7 @@ class MockGoogleSheetsClient:
         self.used_ranges = None
         self.data = []
 
-    def get_data(self, ranges):
+    def get_data(self, spreadsheet_id, ranges):
         self.used_ranges = ranges
         return self.data
 

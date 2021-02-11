@@ -4,7 +4,16 @@ from typing import Iterable, Set, List, Tuple, Optional
 
 import aiogram  # type: ignore
 
-from bot import context, views, types, birthdays_table, utils, exceptions, db
+from bot import (
+    context,
+    views,
+    types,
+    birthdays_table,
+    utils,
+    exceptions,
+    db,
+    settings,
+)
 
 MonthDay = Tuple[int, int]
 
@@ -75,10 +84,14 @@ def _build_birthday_show_parameters(
     return [transform(bd) for bd in birthdays]
 
 
-def _get_data_from_google_table(ctx: context.Context):
+def _get_data_from_google_table(
+        ctx: context.Context, user_settings: settings.UserSettings,
+):
+    spreadsheet_id = user_settings['spreadsheet_id']
+
     try:
         raw_data = ctx.google_sheets_client.get_data(
-            ranges=[ctx.config['google_sheets_sheet_name']],
+            spreadsheet_id, ranges=[ctx.config['google_sheets_sheet_name']],
         )
     except BaseException:
         logging.exception('Got exception during checking google table')
@@ -212,8 +225,12 @@ async def notify_about_errors(
 async def _do_periodic_stuff(ctx: context.Context, user_id: int):
     logging.debug('Start periodic stuff')
 
+    user_settings = ctx.settings.get_for_user(user_id)
+
     now = utils.now_local()
-    birthdays, errors, data_hash = _get_data_from_google_table(ctx)
+    birthdays, errors, data_hash = _get_data_from_google_table(
+        ctx, user_settings,
+    )
 
     logging.debug('Birthdays: %s', birthdays)
     logging.debug('Errors: %s', errors)
@@ -249,7 +266,8 @@ async def do_periodic_stuff(ctx: context.Context):
 async def handle_birthdays_today(
         ctx: context.Context, message: aiogram.types.Message,
 ):
-    birthdays, _, _ = _get_data_from_google_table(ctx)
+    user_settings = ctx.settings.get_for_user(message.from_user.id)
+    birthdays, _, _ = _get_data_from_google_table(ctx, user_settings)
     now = utils.now_local()
     await _notify_about_today(
         ctx, message.chat.id, now, birthdays, notify_on_empty_list=True,
@@ -259,7 +277,8 @@ async def handle_birthdays_today(
 async def handle_birthdays_next_week(
         ctx: context.Context, message: aiogram.types.Message,
 ):
-    birthdays, _, _ = _get_data_from_google_table(ctx)
+    user_settings = ctx.settings.get_for_user(message.from_user.id)
+    birthdays, _, _ = _get_data_from_google_table(ctx, user_settings)
     now = utils.now_local()
     await _notify_about_next_week(
         ctx, message.chat.id, now, birthdays, notify_on_empty_list=True,
