@@ -21,6 +21,8 @@
 [ ] list birthdays
 [x] set google spreadsheet in runtime
 [ ] user guide
+  [x] handlers
+  [ ] pass guide once
 [ ] fill handlers list and help
 [ ] add lic
 [ ] unknown handler
