@@ -85,15 +85,20 @@ class MockGoogleSheetsClient:
         return google_sheets_client.SpreadsheetCheckResult.OK
 
 
+class MockShare:
+    def get_file(self, file_path) -> bytes:
+        return b'mock_file_content'
+
 class MockContext:
     def __init__(self, db_path):
         self.config = MOCK_CONFIG
         self.authorizer = None
+        self.share = MockShare()
         self.db = db.Db(db_path)
         self.bot = MockBot()
         self.settings = settings.Settings(self.db)
         self.google_sheets_client = MockGoogleSheetsClient()
-        self.bot_wrapper = bot_wrapper.BotWrapper(self.bot)
+        self.bot_wrapper = bot_wrapper.BotWrapper(self.bot, self.share)
 
 
 class TimeMocker:

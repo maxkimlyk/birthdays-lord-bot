@@ -35,5 +35,5 @@ class Context:
         self.bot = aiogram.Bot(
             token=self.config['telegram_api_token'], loop=self.aio_loop,
         )
-        self.bot_wrapper = bot_wrapper.BotWrapper(self.bot)
+        self.bot_wrapper = bot_wrapper.BotWrapper(self.bot, self.share)
         self.dp = _create_dispatcher(self.bot)

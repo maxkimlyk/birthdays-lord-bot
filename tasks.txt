@@ -24,3 +24,4 @@
 [ ] fill handlers list and help
 [ ] add lic
 [ ] unknown handler
+[ ] edit handler
