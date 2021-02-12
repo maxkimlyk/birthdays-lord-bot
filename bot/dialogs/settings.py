@@ -1,3 +1,5 @@
+import logging
+
 import aiogram  # type: ignore
 
 from bot import context, views, google_sheets_client
@@ -18,7 +20,12 @@ async def handle_set_spreadsheet_id_step2(
         state: aiogram.dispatcher.FSMContext,
 ):
     await state.finish()
+    await try_set_spreadsheet(ctx, message)
 
+
+async def try_set_spreadsheet(
+        ctx: context.Context, message: aiogram.types.Message,
+) -> bool:
     spreadsheet_id = views.settings.parse_set_spreadsheet_step2_request(
         message.text,
     )
@@ -26,19 +33,19 @@ async def handle_set_spreadsheet_id_step2(
         await ctx.bot_wrapper.reply(
             message, views.settings.build_response_bad_spreadsheet_id(),
         )
-        return
+        return False
 
     check_result = ctx.google_sheets_client.check_spreadsheet(spreadsheet_id)
     if check_result == google_sheets_client.SpreadsheetCheckResult.NO_ACCESS:
         await ctx.bot_wrapper.reply(
             message, views.settings.build_response_no_access_to_spreadsheet(),
         )
-        return
+        return False
     if check_result == google_sheets_client.SpreadsheetCheckResult.NOT_FOUND:
         await ctx.bot_wrapper.reply(
             message, views.settings.build_response_spreadsheet_not_found(),
         )
-        return
+        return False
 
     user_settings = ctx.settings.get_for_user(message.from_user.id)
     user_settings['spreadsheet_id'] = spreadsheet_id
@@ -47,3 +54,7 @@ async def handle_set_spreadsheet_id_step2(
         message,
         views.settings.build_response_spreadsheet_id_was_set_successfully(),
     )
+
+    logging.info('Set spreadsheet: success')
+
+    return True

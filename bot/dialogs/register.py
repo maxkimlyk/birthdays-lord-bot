@@ -116,6 +116,11 @@ def register_handlers(ctx: context.Context):
         state=user_state.UserState.on_set_spreadsheet_id,
     )
 
+    register_handler(start.handle_guide_step1, commands=['guide'])
+    register_handler(
+        start.handle_guide_step2, state=user_state.UserState.on_guide_step2,
+    )
+
     if 'devmode' in ctx.config and bool(ctx.config['devmode']):
         logging.info('DEVMODE enabled')
         register_handler(devmode.get_data, commands=['get_data'])
