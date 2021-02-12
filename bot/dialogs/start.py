@@ -1,7 +1,6 @@
 import aiogram  # type: ignore
 
-from bot import context
-from bot import views
+from bot import context, views
 
 
 async def start(ctx: context.Context, message: aiogram.types.Message):

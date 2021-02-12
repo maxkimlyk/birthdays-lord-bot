@@ -13,6 +13,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 COPY *.py ./
 COPY bot ./bot
+COPY share ./share
 COPY createdb.sql ./
 COPY config.yaml ./
 COPY entrypoint.sh ./

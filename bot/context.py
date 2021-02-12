@@ -10,6 +10,7 @@ from . import config
 from . import bot_wrapper
 from . import google_sheets_client
 from . import settings
+from . import share
 
 
 def _create_dispatcher(bot: aiogram.Bot):
@@ -21,6 +22,7 @@ class Context:
     def __init__(self, config_path: str, environ: Dict[str, str]):
         self.config = config.load_config(config_path, environ)
         self.authorizer = authorizer.Authorizer(self.config)
+        self.share = share.Share(self.config['share_dir'])
         self.db = db.Db(self.config['db_path'])
 
         self.google_sheets_client = google_sheets_client.GoogleSheetsClient(

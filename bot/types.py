@@ -5,6 +5,7 @@ from typing import Optional
 class Response:
     text: str
     parse_mode: Optional[str] = None
+    photo_bytes: Optional[bytes] = None
 
 
 @dataclasses.dataclass

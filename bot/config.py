@@ -13,6 +13,7 @@ _ENV_MAPPING_TO_CONFIG_ARRAYS = {'TELEGRAM_USER_IDS': 'telegram_user_ids'}
 _DEFAULT_VALUES = {
     'db_path': '/var/cache/birthdays-lord-bot/db.db',
     'cache_dir': '/var/cache/birthdays-lord-bot/',
+    'share_dir': 'share/',
 }
 
 
