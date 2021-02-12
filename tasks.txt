@@ -11,10 +11,11 @@
 [ ] impl runtime settings
   [x] store settings
   [ ] handlers for changing settings
-[ ] check access to given spreadsheet
+[x] check access to given spreadsheet
 [ ] better readme
 [ ] get sheet name from spreadsheet properties
 [ ] localizations? now some handlers is in english, some in russian
 [ ] list birthdays
 [ ] set google spreadsheet in runtime
 [ ] fill handlers list and help
+[ ] add lic

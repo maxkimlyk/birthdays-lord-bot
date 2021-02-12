@@ -1,6 +1,6 @@
 import aiogram  # type: ignore
 
-from bot import context, views
+from bot import context, views, google_sheets_client
 from . import user_state
 
 
@@ -28,7 +28,17 @@ async def handle_set_spreadsheet_id_step2(
         )
         return
 
-    # try spreadsheet
+    check_result = ctx.google_sheets_client.check_spreadsheet(spreadsheet_id)
+    if check_result == google_sheets_client.SpreadsheetCheckResult.NO_ACCESS:
+        await ctx.bot_wrapper.reply(
+            message, views.settings.build_response_no_access_to_spreadsheet(),
+        )
+        return
+    if check_result == google_sheets_client.SpreadsheetCheckResult.NOT_FOUND:
+        await ctx.bot_wrapper.reply(
+            message, views.settings.build_response_spreadsheet_not_found(),
+        )
+        return
 
     user_settings = ctx.settings.get_for_user(message.from_user.id)
     user_settings['spreadsheet_id'] = spreadsheet_id

@@ -10,7 +10,7 @@ from .test_common import *
         (
             '  https://docs.google.com/spreadsheets/d/111-jdisopasdoiwejfjjeifopsodijjdjjskkdklsld/edit?usp=sharing\n',
             '111-jdisopasdoiwejfjjeifopsodijjdjjskkdklsld',
-            'Spreadsheet id set successfully',
+            'Spreadsheet id set successfully!',
         ),
         (
             'https://docs.google.com/',

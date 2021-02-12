@@ -13,7 +13,7 @@ _EXPECTED_SPREADSHEET_ID_LENGTH = 44
 
 
 def build_response_set_spreadsheet_id_step1() -> types.Response:
-    text = 'Send me spreadsheet id or link to your table with birthdays'
+    text = 'Send me spreadsheet id or link to your table with birthdays.'
 
     return types.Response(text)
 
@@ -48,6 +48,16 @@ def build_response_bad_spreadsheet_id() -> types.Response:
     return types.Response(text)
 
 
+def build_response_no_access_to_spreadsheet() -> types.Response:
+    text = 'No access to your spreadsheet. Did you allow access?'
+    return types.Response(text)
+
+
+def build_response_spreadsheet_not_found() -> types.Response:
+    text = 'Given spreadsheet does not exist. Please, check whether you wrote it correctly.'
+    return types.Response(text)
+
+
 def build_response_spreadsheet_id_was_set_successfully() -> types.Response:
-    text = 'Spreadsheet id set successfully'
+    text = 'Spreadsheet id set successfully!'
     return types.Response(text)

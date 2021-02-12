@@ -20,9 +20,9 @@ birthdays-lord-bot$ docker-compose run --build -d
 ```
 
 # How to get Google Sheets API service account
-Go to https://console.developers.google.com/cloud-resource-manager and press Create Project.
+Go to https://console.developers.google.com/cloud-resource-manager and press Create Project. Create a new project.
 
-Go to project Settings -> Roles and add your real email as owner.
+Go to the project Settings -> Roles and add your real email as owner.
 
 In project Settings -> Service Accounts create one with role owner. Then create json key for this service account and save file reliably.
 Save email of service account. You can allow access to your spreadsheet for the bot by adding rights to read for this email in Google Sheets UI.

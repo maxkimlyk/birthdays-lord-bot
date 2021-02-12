@@ -1,7 +1,7 @@
 import datetime
 import functools
 
-from bot import bot_wrapper, utils, db, settings
+from bot import bot_wrapper, utils, db, settings, google_sheets_client
 
 MOCK_CHAT_ID = 1488300
 MOCK_MESSAGE_ID = 19
@@ -82,6 +82,9 @@ class MockGoogleSheetsClient:
     def get_data(self, spreadsheet_id, ranges):
         self.used_ranges = ranges
         return self.data
+
+    def check_spreadsheet(self, spreadsheet_id):
+        return google_sheets_client.SpreadsheetCheckResult.OK
 
 
 class MockContext:
