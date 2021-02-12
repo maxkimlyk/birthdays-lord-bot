@@ -76,11 +76,9 @@ class MockBot:
 
 class MockGoogleSheetsClient:
     def __init__(self):
-        self.used_ranges = None
         self.data = []
 
-    def get_data(self, spreadsheet_id, ranges):
-        self.used_ranges = ranges
+    def get_data(self, spreadsheet_id):
         return self.data
 
     def check_spreadsheet(self, spreadsheet_id):

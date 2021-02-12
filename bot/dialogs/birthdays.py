@@ -90,9 +90,7 @@ def _get_data_from_google_table(
     spreadsheet_id = user_settings['spreadsheet_id']
 
     try:
-        raw_data = ctx.google_sheets_client.get_data(
-            spreadsheet_id, ranges=[ctx.config['google_sheets_sheet_name']],
-        )
+        raw_data = ctx.google_sheets_client.get_data(spreadsheet_id)
     except BaseException:
         logging.exception('Got exception during checking google table')
         raise

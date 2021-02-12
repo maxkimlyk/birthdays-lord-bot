@@ -38,15 +38,28 @@ class GoogleSheetsClient:
         )
         self._api = self._create_api(cred_file_path)
 
-    def get_data(
-            self, spreadsheet_id: str, ranges: List[str],
-    ) -> List[List[str]]:
+    def _get_sheets(self, spreadsheet_id: str) -> List[str]:
+        result = (
+            self._api.spreadsheets()
+            .get(spreadsheetId=spreadsheet_id)
+            .execute()
+        )
+        sheets = result['sheets']
+        return [s['properties']['title'] for s in sheets]
+
+    def get_data(self, spreadsheet_id: str) -> List[List[str]]:
+        sheets = self._get_sheets(spreadsheet_id)
+        logging.debug('Got sheets: %s', sheets)
+
+        if sheets == []:
+            return []
+
         results = (
             self._api.spreadsheets()
             .values()
             .batchGet(
                 spreadsheetId=spreadsheet_id,
-                ranges=ranges,
+                ranges=[sheets[0]],
                 valueRenderOption='FORMATTED_VALUE',
                 dateTimeRenderOption='FORMATTED_STRING',
             )
@@ -57,9 +70,8 @@ class GoogleSheetsClient:
         return rows
 
     def check_spreadsheet(self, spreadsheet_id: str) -> SpreadsheetCheckResult:
-        ranges = ['birthdays']
         try:
-            self.get_data(spreadsheet_id, ranges)
+            self.get_data(spreadsheet_id)
         except googleapiclient.errors.HttpError as e:
             if e.resp.status == 403:
                 logging.info(

@@ -8,7 +8,6 @@ services:
       - TELEGRAM_API_TOKEN
       - TELEGRAM_USER_IDS
       - GOOGLE_SHEETS_CREDENTIALS_FILE
-      - GOOGLE_SHEETS_SHEET_NAME
       - DEVMODE
     network_mode: "host"
     restart: unless-stopped

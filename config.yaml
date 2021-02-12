@@ -3,5 +3,4 @@ telegram_user_ids:
   - user_id_1
   - user_id_2
 google_sheets_credentials_file: google_sheets_credentials.json
-google_sheets_sheet_name: birthdays
 notification_time: 07:00

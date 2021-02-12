@@ -10,7 +10,6 @@ birthdays-lord-bot$ mkdir cache
 2. Place Goggle Sheets Service account json key file into created directory _cache_  (see instructions how to get it below)
 
 3. Fill in settings in _config.yaml_.
-    - `google_sheets_credentials_file` should contain your json key file name from previous step.
 
 4. Add access to read your streadsheet with birthdays for service account.
 
