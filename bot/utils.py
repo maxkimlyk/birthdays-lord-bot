@@ -41,6 +41,11 @@ def now_local() -> datetime.datetime:
 def get_local_timezone():
     return dateutil.tz.tzlocal()
 
+
 def parse_daytime(timestr: str) -> datetime.time:
     dt = datetime.datetime.strptime(timestr, '%H:%M')
     return datetime.time(hour=dt.hour, minute=dt.minute)
+
+
+def format_daytime(time: datetime.time) -> str:
+    return '{:02d}:{:02d}'.format(time.hour, time.minute)

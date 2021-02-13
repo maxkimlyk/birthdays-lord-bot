@@ -53,8 +53,8 @@ class TypeDaytime(TypeDescr):
     def cast_value(self, value: Any) -> str:
         text = str(value).strip()
         try:
-            utils.parse_daytime(text)
-            return text
+            time = utils.parse_daytime(text)
+            return utils.format_daytime(time)
         except ValueError as e:
             raise exceptions.CannotCast('Bad value: {}'.format(text)) from e
 

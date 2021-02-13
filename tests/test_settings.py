@@ -46,3 +46,6 @@ def test_daytime(db_path):
 
     user_settings[key] = '00:00'
     assert user_settings[key] == '00:00'
+
+    user_settings[key] = '8:1'
+    assert user_settings[key] == '08:01'
