@@ -43,3 +43,6 @@ async def handle_guide_step2(
 
     await state.finish()
     await ctx.bot_wrapper.reply(message, views.guide.build_guide_step2())
+    await ctx.bot_wrapper.reply(
+        message, views.command_list.build_command_list(),
+    )

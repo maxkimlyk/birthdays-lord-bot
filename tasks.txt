@@ -29,3 +29,4 @@
 [x] edit handler
 [x] check doen't work for empty table
 [ ] get rid of now utc
+[ ] dont allow any commands before guide is passed
