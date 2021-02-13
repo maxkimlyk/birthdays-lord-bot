@@ -66,8 +66,12 @@ def _verbose_handler(bot: aiogram.Bot):
     return decorator
 
 
-async def handle_unknown_command(ctx: context.Context, message: aiogram.types.Message):
-    await ctx.bot_wrapper.reply(message, views.unknown_command.build_response(message))
+async def handle_unknown_command(
+        ctx: context.Context, message: aiogram.types.Message,
+):
+    await ctx.bot_wrapper.reply(
+        message, views.unknown_command.build_response(message),
+    )
 
 
 def _only_for_authorized(ctx: context.Context):
@@ -121,6 +125,14 @@ def register_handlers(ctx: context.Context):
     register_handler(
         settings.handle_set_spreadsheet_id_step2,
         state=user_state.UserState.on_set_spreadsheet_id,
+    )
+    register_handler(
+        settings.handle_set_notification_time,
+        commands=['set_notification_time'],
+    )
+    register_handler(
+        settings.handle_set_notification_time_step2,
+        state=user_state.UserState.on_set_notification_time,
     )
 
     register_handler(

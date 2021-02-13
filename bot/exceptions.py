@@ -4,3 +4,7 @@ class NoSuchData(RuntimeError):
 
 class ResourceNotFound(RuntimeError):
     pass
+
+
+class CannotCast(ValueError):
+    pass

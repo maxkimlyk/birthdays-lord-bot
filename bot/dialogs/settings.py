@@ -2,7 +2,7 @@ import logging
 
 import aiogram  # type: ignore
 
-from bot import context, views, google_sheets_client
+from bot import context, views, google_sheets_client, exceptions
 from . import user_state
 
 
@@ -79,3 +79,32 @@ async def handle_toggle_weekly_notifications(
     await ctx.bot_wrapper.reply(
         message, views.settings.build_response_current_settings(user_settings),
     )
+
+
+async def handle_set_notification_time(
+        ctx: context.Context, message: aiogram.types.Message,
+):
+    await user_state.UserState.on_set_notification_time.set()
+    await ctx.bot_wrapper.reply(
+        message, views.settings.build_response_set_notification_time_step1(),
+    )
+
+
+async def handle_set_notification_time_step2(
+        ctx: context.Context,
+        message: aiogram.types.Message,
+        state: aiogram.dispatcher.FSMContext,
+):
+    await state.finish()
+    user_settings = ctx.settings.get_for_user(message.from_user.id)
+    try:
+        user_settings['notification_time'] = message.text
+        await ctx.bot_wrapper.reply(
+            message,
+            views.settings.build_response_current_settings(user_settings),
+        )
+    except exceptions.CannotCast:
+        logging.exception('Cannot cast')
+        await ctx.bot_wrapper.reply(
+            message, views.settings.build_response_bad_setting_value(),
+        )

@@ -67,6 +67,17 @@ def build_response_spreadsheet_id_was_set_successfully() -> types.Response:
     return types.Response('Новая таблица установлена успешно!')
 
 
+def build_response_set_notification_time_step1() -> types.Response:
+    return types.Response(
+        'Задайте новое время для ежедневных оповещений. Например, <code>07:30</code>.',
+        common.PARSE_MODE_HTML,
+    )
+
+
+def build_response_bad_setting_value() -> types.Response:
+    return types.Response('Извините, но это значение не подходит.')
+
+
 def _localize_setting_value(setting: Any) -> str:
     if setting is None:
         return 'не установлено'
@@ -79,12 +90,17 @@ def build_response_current_settings(
         user_settings: settings.UserSettings,
 ) -> types.Response:
     setting_descrs = {
-        ('Идентификатор таблицы Google Sheets', 'spreadsheet_id', '/set_spreadsheet'),
+        (
+            'Идентификатор таблицы Google Sheets',
+            'spreadsheet_id',
+            '/set_spreadsheet',
+        ),
         (
             'Оповещения на неделю вперед (по понедельникам)',
             'enable_weekly_notifications',
             '/toggle_weekly_notifications',
         ),
+        ('Время оповещений', 'notification_time', '/set_notification_time'),
     }
 
     lines = []

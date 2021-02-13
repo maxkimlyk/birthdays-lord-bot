@@ -10,10 +10,10 @@
   [x] allow each user have own spreadsheet
 [x] impl runtime settings
   [x] store settings
-[ ] handlers for changing settings
+[x] handlers for changing settings
   [x] spreadsheet
   [x] weekly notifications
-  [ ] notification time
+  [x] notification time
 [x] check access to given spreadsheet
 [ ] better readme
 [x] get sheet name from spreadsheet properties
@@ -25,6 +25,7 @@
   [x] pass guide once
 [x] fill handlers list and help
 [ ] add lic
-[ ] unknown handler
+[x] unknown handler
 [ ] edit handler
 [x] check doen't work for empty table
+[ ] get rid of now utc

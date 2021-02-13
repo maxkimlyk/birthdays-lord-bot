@@ -236,16 +236,12 @@ async def _do_periodic_stuff(ctx: context.Context, user_id: int):
     if errors != []:
         await notify_about_errors(ctx, user_id, data_hash, errors)
 
-    notification_time = utils.parse_daytime(ctx.config['notification_time'])
+    notification_time = utils.parse_daytime(user_settings['notification_time'])
 
     if _should_notify_about_next_week(ctx, user_id, now, notification_time):
         if user_settings['enable_weekly_notifications']:
             await _notify_about_next_week(
-                ctx,
-                user_id,
-                now,
-                birthdays,
-                notify_on_empty_list=False,
+                ctx, user_id, now, birthdays, notify_on_empty_list=False,
             )
         ctx.db.set_last_notified(_WEEKLY_NOTIFICATION, user_id, now)
 

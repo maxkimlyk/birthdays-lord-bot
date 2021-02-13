@@ -3,11 +3,7 @@ import json
 import logging
 from typing import Any, Dict, Optional
 
-from . import db, exceptions
-
-
-class CannotCast(Exception):
-    pass
+from . import db, exceptions, utils
 
 
 class TypeDescr:
@@ -29,7 +25,7 @@ class TypeBool(TypeDescr):
         if isinstance(value, str):
             return bool(str)
 
-        raise CannotCast('value of unexpected type')
+        raise exceptions.CannotCast('value of unexpected type')
 
     def get_default(self) -> bool:
         if self._default is not None:
@@ -50,11 +46,28 @@ class TypeOptionalStr(TypeDescr):
         return self._default
 
 
+class TypeDaytime(TypeDescr):
+    def __init__(self, default: str):
+        self.default = self.cast_value(default)
+
+    def cast_value(self, value: Any) -> str:
+        text = str(value).strip()
+        try:
+            utils.parse_daytime(text)
+            return text
+        except ValueError as e:
+            raise exceptions.CannotCast('Bad value: {}'.format(text)) from e
+
+    def get_default(self) -> str:
+        return self.default
+
+
 SchemaType = Dict[str, TypeDescr]
 
 _USER_SETTINGS_SCHEMA: SchemaType = {
     'spreadsheet_id': TypeOptionalStr(default=None),
     'enable_weekly_notifications': TypeBool(default=True),
+    'notification_time': TypeDaytime(default='07:00'),
 }
 
 
