@@ -69,7 +69,7 @@ def build_response_spreadsheet_id_was_set_successfully() -> types.Response:
 
 def build_response_set_notification_time_step1() -> types.Response:
     return types.Response(
-        'Задайте новое время для ежедневных оповещений. Например, <code>07:30</code>.',
+        'Задайте новое время для ежедневных оповещений. Например, 07:30.',
         common.PARSE_MODE_HTML,
     )
 
@@ -86,28 +86,45 @@ def _localize_setting_value(setting: Any) -> str:
     return str(setting)
 
 
+def _format_setting_value(setting: Any) -> str:
+    return '<code>{}</code>'.format(_localize_setting_value(setting))
+
+
+def _format_spreadsheet_id_with_link(spreadsheet_id: str) -> str:
+    return '<a href="{}">{}</a>'.format(
+        common.make_google_sheets_edit_link(spreadsheet_id), spreadsheet_id,
+    )
+
+
 def build_response_current_settings(
         user_settings: settings.UserSettings,
 ) -> types.Response:
-    setting_descrs = {
+    setting_descrs = [
         (
             'Идентификатор таблицы Google Sheets',
             'spreadsheet_id',
+            _format_spreadsheet_id_with_link,
             '/set_spreadsheet',
         ),
         (
             'Оповещения на неделю вперед (по понедельникам)',
             'enable_weekly_notifications',
+            _format_setting_value,
             '/toggle_weekly_notifications',
         ),
-        ('Время оповещений', 'notification_time', '/set_notification_time'),
-    }
+        (
+            'Время оповещений',
+            'notification_time',
+            _format_setting_value,
+            '/set_notification_time',
+        ),
+    ]
 
     lines = []
-    for loc, key, handler in setting_descrs:
+    for loc, key, format_func, handler in setting_descrs:
         lines.append(
-            '<b>{}</b>: <code>{}</code>\n'.format(
-                loc, _localize_setting_value(user_settings[key]),
+            '<b>{}</b>: {}\n'.format(
+                loc, format_func(user_settings[key]),
             )
             + 'Изменить: {}'.format(handler),
         )
