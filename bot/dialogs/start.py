@@ -1,14 +1,22 @@
 import aiogram  # type: ignore
 
-from bot import context, views
+from bot import context, views, db, exceptions
 from . import settings, user_state
+
+
+def _is_guide_passed(ctx: context.Context, user_id: int) -> bool:
+    try:
+        ctx.db.get_cache_value(db.CACHE_GUIDE_PASSED, user_id)
+        return True
+    except exceptions.NoSuchData:
+        return False
 
 
 async def start(ctx: context.Context, message: aiogram.types.Message):
     await ctx.bot_wrapper.reply(message, views.start.build_response())
 
-    # TODO: if guide is not passed
-    await handle_guide_step1(ctx, message)
+    if not _is_guide_passed(ctx, message.from_user.id):
+        await handle_guide_step1(ctx, message)
 
 
 async def handle_guide_step1(
@@ -27,6 +35,7 @@ async def handle_guide_step2(
     if not status:
         return
 
-    await state.finish()
+    ctx.db.add_cache_value(db.CACHE_GUIDE_PASSED, message.from_user.id, 'true')
 
+    await state.finish()
     await ctx.bot_wrapper.reply(message, views.guide.build_guide_step2())

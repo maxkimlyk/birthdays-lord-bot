@@ -20,9 +20,9 @@
 [ ] localizations? now some handlers is in english, some in russian
 [ ] list birthdays
 [x] set google spreadsheet in runtime
-[ ] user guide
+[x] user guide
   [x] handlers
-  [ ] pass guide once
+  [x] pass guide once
 [ ] fill handlers list and help
 [ ] add lic
 [ ] unknown handler

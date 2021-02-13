@@ -9,6 +9,7 @@ _DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 
 # Cache keys
 CACHE_TABLE_DATA_HASH = 'table_data_hash'
+CACHE_GUIDE_PASSED = 'guide_passed'
 CACHE_SETTINGS = 'settings'
 
 
