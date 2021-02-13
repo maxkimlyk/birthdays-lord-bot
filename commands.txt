@@ -1,0 +1,7 @@
+Command list.
+Add to your bot via BotFather -> /mybots -> Your bot ->  Edit Bot -> Edit commands.
+
+start - Приветственное сообщение
+today - Дни рождения сегодня
+next_week - Дни рождения на след. неделе
+set_spreadsheet - Использовать новую таблицу
