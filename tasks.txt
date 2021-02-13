@@ -27,3 +27,4 @@
 [ ] add lic
 [ ] unknown handler
 [ ] edit handler
+[x] check doen't work for empty table

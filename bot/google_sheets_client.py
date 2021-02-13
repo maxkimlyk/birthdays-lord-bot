@@ -71,7 +71,7 @@ class GoogleSheetsClient:
 
     def check_spreadsheet(self, spreadsheet_id: str) -> SpreadsheetCheckResult:
         try:
-            self.get_data(spreadsheet_id)
+            self._get_sheets(spreadsheet_id)
         except googleapiclient.errors.HttpError as e:
             if e.resp.status == 403:
                 logging.info(
