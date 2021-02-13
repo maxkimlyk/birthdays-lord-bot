@@ -15,12 +15,12 @@
   [x] weekly notifications
   [x] notification time
 [x] check access to given spreadsheet
-[ ] better readme
+[x] better readme
 [x] get sheet name from spreadsheet properties
 [-] localizations? now some handlers is in english, some in russian
 [ ] list birthdays
 [x] set google spreadsheet in runtime
-[x] user guide
+[x] user's guide
   [x] handlers
   [x] pass guide once
 [x] fill handlers list and help
