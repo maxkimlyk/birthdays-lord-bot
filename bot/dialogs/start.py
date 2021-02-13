@@ -17,6 +17,10 @@ async def start(ctx: context.Context, message: aiogram.types.Message):
 
     if not _is_guide_passed(ctx, message.from_user.id):
         await handle_guide_step1(ctx, message)
+    else:
+        await ctx.bot_wrapper.reply(
+            message, views.command_list.build_command_list(),
+        )
 
 
 async def handle_guide_step1(
