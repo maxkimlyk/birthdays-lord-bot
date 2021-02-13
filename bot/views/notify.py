@@ -91,12 +91,25 @@ def build_birthdays_weekly_notification(
     if birthdays == []:
         return types.Response('На следующей неделе не будет дней рождения')
 
-    text = (
-        'На следующей неделе дни рождения будут праздновать:\n'
-        + '\n'.join((_build_birthday_text_full(bd) for bd in birthdays))
+    text = 'На следующей неделе дни рождения будут праздновать:\n' + '\n'.join(
+        (_build_birthday_text_full(bd) for bd in birthdays),
     )
 
     return types.Response(text, common.PARSE_MODE_HTML)
+
+
+def _localize_error(error: types.TableParseError) -> str:
+    Reason = types.TableParseError.Reason
+    switch = {
+        Reason.EXPECTED_INTEGER_VALUE: 'Ожидалось целое число',
+        Reason.BAD_DAY_NUMBER: 'Несуществующий день',
+        Reason.BAD_MONTH_NUMBER: 'Несуществующий месяц',
+        Reason.BAD_YEAR_NUMBER: 'Несуществующий год',
+        Reason.BAD_DATE_FORMAT: 'Неправильный формат даты',
+        Reason.BAD_PERSON_NAME: 'Отсутствует имя',
+    }
+    reason_text = switch.get(error.reason, 'Неизвестная ошибка')
+    return 'Строка {}: {}'.format(error.row, reason_text)
 
 
 def build_errors_notification(
@@ -106,7 +119,7 @@ def build_errors_notification(
         return types.Response('Нет ошибок')
 
     text = 'Обнаружены ошибки в таблице:\n' + '\n'.join(
-        (e.description for e in errors),
+        (_localize_error(e) for e in errors),
     )
 
     return types.Response(text)

@@ -7,7 +7,18 @@ from . import types
 
 
 class ParseError(BaseException):
-    pass
+    def __init__(self, reason):
+        super().__init__()
+        self.reason = reason
+
+    def __repr__(self):
+        return 'ParseError({})'.format(self.reason)
+
+    def __eq__(self, other):
+        return self.reason == other.reason
+
+
+_Reason = types.TableParseError.Reason
 
 
 _DAYS_IN_MONTH = {
@@ -34,27 +45,27 @@ def _parse_int(raw: str) -> int:
     try:
         return int(raw)
     except ValueError as e:
-        raise ParseError('Expected integer value') from e
+        raise ParseError(_Reason.EXPECTED_INTEGER_VALUE) from e
 
 
 def _parse_day(day_raw: str, max_day_in_month: int) -> int:
     day = _parse_int(day_raw)
     if day < 1 or day > max_day_in_month:
-        raise ParseError('Bad day number')
+        raise ParseError(_Reason.BAD_DAY_NUMBER)
     return day
 
 
 def _parse_month(month_raw: str) -> int:
     month = _parse_int(month_raw)
     if month < 1 or month > 12:
-        raise ParseError('Bad month number')
+        raise ParseError(_Reason.BAD_MONTH_NUMBER)
     return month
 
 
 def _parse_year(year_raw: str) -> int:
     year = _parse_int(year_raw)
     if year < 1:
-        raise ParseError('Bad year number')
+        raise ParseError(_Reason.BAD_YEAR_NUMBER)
     return year
 
 
@@ -62,7 +73,7 @@ def _parse_date(raw: str) -> types.AnnualDate:
     components = raw.split('.')
 
     if len(components) not in {2, 3}:
-        raise ParseError('Unexpected date format')
+        raise ParseError(_Reason.BAD_DATE_FORMAT)
 
     month = _parse_month(components[1])
     day = _parse_day(components[0], _DAYS_IN_MONTH[month])
@@ -80,7 +91,7 @@ def parse_row(row: List[str]) -> Optional[types.Birthday]:
 
     person_name = row[0].strip()
     if person_name == '':
-        raise ParseError('Bad person name')
+        raise ParseError(_Reason.BAD_PERSON_NAME)
 
     date_raw = row[1].strip()
     date = _parse_date(date_raw)
@@ -109,8 +120,6 @@ def parse(
             if birthday is not None:
                 result.append(birthday)
         except ParseError as e:
-            errors.append(
-                types.TableParseError('Row #{}: {}'.format(i + 1, str(e))),
-            )
+            errors.append(types.TableParseError(e.reason, i + 1))
 
     return result, errors, _get_hash(rows)

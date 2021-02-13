@@ -17,7 +17,7 @@
 [x] check access to given spreadsheet
 [ ] better readme
 [x] get sheet name from spreadsheet properties
-[ ] localizations? now some handlers is in english, some in russian
+[-] localizations? now some handlers is in english, some in russian
 [ ] list birthdays
 [x] set google spreadsheet in runtime
 [x] user guide

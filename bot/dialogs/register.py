@@ -4,7 +4,7 @@ from typing import Union
 
 import aiogram  # type: ignore
 
-from bot import context
+from bot import context, views
 from . import start, devmode, birthdays, settings, user_state
 
 
@@ -18,11 +18,8 @@ async def _not_authorized(
         arg.from_user.full_name,
     )
 
-    await ctx.bot.send_message(
-        arg.chat.id,
-        'You aren\'t authorized. Did you forget to add your ID ({}) to config?'.format(
-            arg.from_user.id,
-        ),
+    await ctx.bot_wrapper.send(
+        arg.chat.id, views.not_authorized.build_response(arg.from_user.id),
     )
 
 

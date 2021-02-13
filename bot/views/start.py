@@ -4,9 +4,9 @@ from . import common
 
 def build_response() -> types.Response:
     text = (
-        'Hello!\n'
-        'I\'m your humble Birthdays Lord. I\'ll send your everyday notifications about '
-        'who celebrate his birthday today.'
+        'Привет!\n\n'
+        'Я - ваш скромный Birthdays Lord (Повелитель Дней Рождения). '
+        'Я буду ежедневно напоминать вам, у кого день рождения в этот день.'
     )
 
     return types.Response(text, common.PARSE_MODE_HTML)

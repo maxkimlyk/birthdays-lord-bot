@@ -27,25 +27,27 @@ def test_parse_row(row, expected):
     assert birthdays_table.parse_row(row) == expected
 
 
+_Reason = types.TableParseError.Reason
+
 @pytest.mark.parametrize(
     'row,expected_error',
     [
-        (['John', '1/01/1990'], 'Unexpected date format'),
-        (['John', '01.01.01.1990'], 'Unexpected date format'),
-        (['John', '000 1.01.1990'], 'Expected integer value'),
-        (['John', '-1.01.1990'], 'Bad day number'),
-        (['John', '30.02.1990'], 'Bad day number'),
-        (['John', '55.12.1990'], 'Bad day number'),
-        (['John', '01.13.1990'], 'Bad month number'),
-        (['John', '01.05.0000'], 'Bad year number'),
-        (['  ', '01.05.1990'], 'Bad person name'),
+        (['John', '1/01/1990'], birthdays_table.ParseError(_Reason.BAD_DATE_FORMAT)),
+        (['John', '01.01.01.1990'], birthdays_table.ParseError(_Reason.BAD_DATE_FORMAT)),
+        (['John', '000 1.01.1990'], birthdays_table.ParseError(_Reason.EXPECTED_INTEGER_VALUE)),
+        (['John', '-1.01.1990'], birthdays_table.ParseError(_Reason.BAD_DAY_NUMBER)),
+        (['John', '30.02.1990'], birthdays_table.ParseError(_Reason.BAD_DAY_NUMBER)),
+        (['John', '55.12.1990'], birthdays_table.ParseError(_Reason.BAD_DAY_NUMBER)),
+        (['John', '01.13.1990'], birthdays_table.ParseError(_Reason.BAD_MONTH_NUMBER)),
+        (['John', '01.05.0000'], birthdays_table.ParseError(_Reason.BAD_YEAR_NUMBER)),
+        (['  ', '01.05.1990'], birthdays_table.ParseError(_Reason.BAD_PERSON_NAME)),
     ],
 )
 def test_parse_row_error(row, expected_error):
     try:
         birthdays_table.parse_row(row)
     except birthdays_table.ParseError as e:
-        assert str(e) == expected_error
+        assert e == expected_error
         return
 
     assert False, "Expected error"
