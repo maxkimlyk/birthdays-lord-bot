@@ -4,16 +4,7 @@ from typing import Iterable, Set, List, Tuple, Optional
 
 import aiogram  # type: ignore
 
-from bot import (
-    context,
-    views,
-    types,
-    birthdays_table,
-    utils,
-    exceptions,
-    db,
-    settings,
-)
+from bot import context, views, types, birthdays_table, utils, exceptions, db
 
 MonthDay = Tuple[int, int]
 
@@ -84,11 +75,7 @@ def _build_birthday_show_parameters(
     return [transform(bd) for bd in birthdays]
 
 
-def _get_data_from_google_table(
-        ctx: context.Context, user_settings: settings.UserSettings,
-):
-    spreadsheet_id = user_settings['spreadsheet_id']
-
+def _get_data_from_google_table(ctx: context.Context, spreadsheet_id: str):
     try:
         raw_data = ctx.google_sheets_client.get_data(spreadsheet_id)
     except BaseException:
@@ -221,13 +208,18 @@ async def notify_about_errors(
 
 
 async def _do_periodic_stuff(ctx: context.Context, user_id: int):
-    logging.debug('Start periodic stuff')
+    logging.debug('Start periodic stuff, user_id=%s', user_id)
 
     user_settings = ctx.settings.get_for_user(user_id)
 
     now = utils.now_local()
+
+    if user_settings['spreadsheet_id'] is None:
+        logging.warning('Spreadsheet id isn\'t set, user_id=%s', user_id)
+        return
+
     birthdays, errors, data_hash = _get_data_from_google_table(
-        ctx, user_settings,
+        ctx, user_settings['spreadsheet_id'],
     )
 
     logging.debug('user_id=%s, birthdays: %s', user_id, birthdays)
@@ -266,7 +258,9 @@ async def handle_birthdays_today(
         ctx: context.Context, message: aiogram.types.Message,
 ):
     user_settings = ctx.settings.get_for_user(message.from_user.id)
-    birthdays, _, _ = _get_data_from_google_table(ctx, user_settings)
+    birthdays, _, _ = _get_data_from_google_table(
+        ctx, user_settings['spreadsheet_id'],
+    )
     now = utils.now_local()
     await _notify_about_today(
         ctx, message.chat.id, now, birthdays, notify_on_empty_list=True,
@@ -277,7 +271,9 @@ async def handle_birthdays_next_week(
         ctx: context.Context, message: aiogram.types.Message,
 ):
     user_settings = ctx.settings.get_for_user(message.from_user.id)
-    birthdays, _, _ = _get_data_from_google_table(ctx, user_settings)
+    birthdays, _, _ = _get_data_from_google_table(
+        ctx, user_settings['spreadsheet_id'],
+    )
     now = utils.now_local()
     await _notify_about_next_week(
         ctx, message.chat.id, now, birthdays, notify_on_empty_list=True,
