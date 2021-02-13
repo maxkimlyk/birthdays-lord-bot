@@ -8,8 +8,7 @@ def build_command_list() -> types.Response:
         '/start, /help - показать приветственное сообщение и список команд\n'
         '/today - дни рождения сегодня\n'
         '/next_week - дни рождения на следующей неделе\n'
-        '\n'
-        '/set_spreadsheet - использовать новую таблицу\n'
+        '/settings - изменить настройки\n'
     )
 
     return types.Response(text, common.PARSE_MODE_HTML)

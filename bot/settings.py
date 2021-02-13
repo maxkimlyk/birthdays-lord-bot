@@ -14,7 +14,7 @@ class TypeDescr:
     def cast_value(self, value: Any) -> Any:
         raise NotImplementedError
 
-    def get_default(self):
+    def get_default(self) -> Any:
         raise NotImplementedError
 
 
@@ -31,7 +31,7 @@ class TypeBool(TypeDescr):
 
         raise CannotCast('value of unexpected type')
 
-    def get_default(self):
+    def get_default(self) -> bool:
         if self._default is not None:
             return self._default
         return False
@@ -46,7 +46,7 @@ class TypeOptionalStr(TypeDescr):
             return value
         return str(value)
 
-    def get_default(self):
+    def get_default(self) -> Optional[str]:
         return self._default
 
 
@@ -54,6 +54,7 @@ SchemaType = Dict[str, TypeDescr]
 
 _USER_SETTINGS_SCHEMA: SchemaType = {
     'spreadsheet_id': TypeOptionalStr(default=None),
+    'enable_weekly_notifications': TypeBool(default=True),
 }
 
 

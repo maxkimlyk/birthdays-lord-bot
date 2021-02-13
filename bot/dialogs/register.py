@@ -66,6 +66,10 @@ def _verbose_handler(bot: aiogram.Bot):
     return decorator
 
 
+async def handle_unknown_command(ctx: context.Context, message: aiogram.types.Message):
+    await ctx.bot_wrapper.reply(message, views.unknown_command.build_response(message))
+
+
 def _only_for_authorized(ctx: context.Context):
     def decorator(func):
         @functools.wraps(func)
@@ -105,6 +109,12 @@ def register_handlers(ctx: context.Context):
         birthdays.handle_birthdays_next_week, commands=['next_week'],
     )
 
+    register_handler(settings.handle_settings, commands=['settings'])
+
+    register_handler(
+        settings.handle_toggle_weekly_notifications,
+        commands=['toggle_weekly_notifications'],
+    )
     register_handler(
         settings.handle_set_spreadsheet_id, commands=['set_spreadsheet'],
     )
@@ -122,3 +132,5 @@ def register_handlers(ctx: context.Context):
         register_handler(start.handle_guide_step1, commands=['guide'])
         register_handler(devmode.get_data, commands=['get_data'])
         register_handler(devmode.get_datetime, commands=['get_datetime'])
+
+    register_handler(handle_unknown_command)

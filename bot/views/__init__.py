@@ -4,3 +4,4 @@ from . import settings
 from . import guide
 from . import not_authorized
 from . import command_list
+from . import unknown_command

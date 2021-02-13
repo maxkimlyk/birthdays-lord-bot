@@ -58,3 +58,24 @@ async def try_set_spreadsheet(
     logging.info('Set spreadsheet: success')
 
     return True
+
+
+async def handle_settings(
+        ctx: context.Context, message: aiogram.types.Message,
+):
+    user_settings = ctx.settings.get_for_user(message.from_user.id)
+    await ctx.bot_wrapper.reply(
+        message, views.settings.build_response_current_settings(user_settings),
+    )
+
+
+async def handle_toggle_weekly_notifications(
+        ctx: context.Context, message: aiogram.types.Message,
+):
+    user_settings = ctx.settings.get_for_user(message.from_user.id)
+    user_settings['enable_weekly_notifications'] = not user_settings[
+        'enable_weekly_notifications'
+    ]
+    await ctx.bot_wrapper.reply(
+        message, views.settings.build_response_current_settings(user_settings),
+    )

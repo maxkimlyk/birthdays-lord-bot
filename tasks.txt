@@ -12,7 +12,7 @@
   [x] store settings
 [ ] handlers for changing settings
   [x] spreadsheet
-  [ ] weekly notifications
+  [x] weekly notifications
   [ ] notification time
 [x] check access to given spreadsheet
 [ ] better readme

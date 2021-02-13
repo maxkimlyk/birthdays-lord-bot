@@ -1,7 +1,8 @@
 import re
-from typing import Optional
+from typing import Optional, Any
 
-from bot import types
+from bot import types, settings
+from . import common
 
 _URL_REGEXP = re.compile(
     r'https:\/\/docs\.google\.com\/spreadsheets\/d\/([\w\-]+)\/edit.*',
@@ -64,3 +65,36 @@ def build_response_spreadsheet_not_found() -> types.Response:
 
 def build_response_spreadsheet_id_was_set_successfully() -> types.Response:
     return types.Response('Новая таблица установлена успешно!')
+
+
+def _localize_setting_value(setting: Any) -> str:
+    if setting is None:
+        return 'не установлено'
+    if isinstance(setting, bool):
+        return 'вкл' if setting else 'выкл'
+    return str(setting)
+
+
+def build_response_current_settings(
+        user_settings: settings.UserSettings,
+) -> types.Response:
+    setting_descrs = {
+        ('Идентификатор таблицы Google Sheets', 'spreadsheet_id', '/set_spreadsheet'),
+        (
+            'Оповещения на неделю вперед (по понедельникам)',
+            'enable_weekly_notifications',
+            '/toggle_weekly_notifications',
+        ),
+    }
+
+    lines = []
+    for loc, key, handler in setting_descrs:
+        lines.append(
+            '<b>{}</b>: <code>{}</code>\n'.format(
+                loc, _localize_setting_value(user_settings[key]),
+            )
+            + 'Изменить: {}'.format(handler),
+        )
+
+    text = 'Текущие настройки:\n\n' + '\n\n'.join(lines)
+    return types.Response(text, common.PARSE_MODE_HTML)
