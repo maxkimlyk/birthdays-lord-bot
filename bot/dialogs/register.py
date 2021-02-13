@@ -5,7 +5,7 @@ from typing import Union
 import aiogram  # type: ignore
 
 from bot import context, views
-from . import start, devmode, birthdays, settings, user_state
+from . import start, devmode, birthdays, settings, user_state, edit
 
 
 async def _not_authorized(
@@ -111,6 +111,9 @@ def register_handlers(ctx: context.Context):
     register_handler(birthdays.handle_birthdays_today, commands=['today'])
     register_handler(
         birthdays.handle_birthdays_next_week, commands=['next_week'],
+    )
+    register_handler(
+        edit.handle_edit, commands=['edit']
     )
 
     register_handler(settings.handle_settings, commands=['settings'])

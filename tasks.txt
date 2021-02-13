@@ -26,6 +26,6 @@
 [x] fill handlers list and help
 [ ] add lic
 [x] unknown handler
-[ ] edit handler
+[x] edit handler
 [x] check doen't work for empty table
 [ ] get rid of now utc
