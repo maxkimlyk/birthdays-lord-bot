@@ -73,11 +73,13 @@ def test_select_birthdays_today(now, birthdays, expected):
             [types.Birthday(types.AnnualDate(17, 2), 'Peter')],
         ),
         (datetime.datetime(2020, 2, 17), []),
-
     ],
 )
 def test_select_birthdays_next_week(now, birthdays, expected):
-    assert dialogs_birthdays.select_birthdays_next_week(now, birthdays) == expected
+    assert (
+        dialogs_birthdays.select_birthdays_next_week(now, birthdays)
+        == expected
+    )
 
 
 @pytest.mark.parametrize(
@@ -86,11 +88,7 @@ def test_select_birthdays_next_week(now, birthdays, expected):
         (
             datetime.datetime(2020, 2, 1),
             [['John', '1.03'], ['Kate', '01.2'], ['Amy', '01.02.1990']],
-            (
-                'Сегодня дни рождения у\n'
-                '<b>Kate</b>\n'
-                '<b>Amy</b> - 30 лет'
-            ),
+            ('Сегодня дни рождения у\n' '<b>Kate</b>\n' '<b>Amy</b> - 30 лет'),
         ),
     ],
 )
@@ -98,9 +96,11 @@ def test_select_birthdays_next_week(now, birthdays, expected):
 async def test_handle_birthdays_today(
         mock_context, mock_time, now, birthdays_data, expected,
 ):
-    mock_time.set_local(now)
+    mock_time.set(now)
     mock_context.google_sheets_client.data = birthdays_data
-    await dialogs_birthdays.handle_birthdays_today(mock_context, MockMessage('/today'))
+    await dialogs_birthdays.handle_birthdays_today(
+        mock_context, MockMessage('/today'),
+    )
     assert mock_context.bot.last_message.text == expected
 
 
@@ -122,9 +122,11 @@ async def test_handle_birthdays_today(
 async def test_handle_birthdays_next_week(
         mock_context, mock_time, now, birthdays_data, expected,
 ):
-    mock_time.set_local(now)
+    mock_time.set(now)
     mock_context.google_sheets_client.data = birthdays_data
-    await dialogs_birthdays.handle_birthdays_next_week(mock_context, MockMessage('/today'))
+    await dialogs_birthdays.handle_birthdays_next_week(
+        mock_context, MockMessage('/today'),
+    )
     assert mock_context.bot.last_message.text == expected
 
 
@@ -165,7 +167,10 @@ async def test_periodic_birthday_today_notification(
         notification_time,
         should_notify,
 ):
-    mock_time.set_local(now)
+    mock_time.set(now)
+    mock_context.settings.get_for_user(MOCK_USER_ID)[
+        'spreadsheet_id'
+    ] = 'mock_spreadsheet_id'
     mock_context.google_sheets_client.data = birthdays_data
     mock_context.db.set_last_notified(
         db.CACHE_TABLE_DATA_HASH, MOCK_USER_ID, last_notification,
@@ -181,6 +186,9 @@ async def test_periodic_errors_notification(
         mock_context, mock_time, birthdays_data,
 ):
     mock_context.google_sheets_client.data = birthdays_data
+    mock_context.settings.get_for_user(MOCK_USER_ID)[
+        'spreadsheet_id'
+    ] = 'mock_spreadsheet_id'
     await dialogs_birthdays.do_periodic_stuff(mock_context)
     assert mock_context.bot.messages[0].text.startswith(
         'Обнаружены ошибки в таблице',

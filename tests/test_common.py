@@ -104,13 +104,9 @@ class TimeMocker:
     def __init__(self):
         utils.reset_mock_time()
 
-    def set_local(self, local):
-        utc = local - datetime.timedelta(hours=3)
-        utils.set_mock_time(local, utc)
-
-    def set_utc(self, utc):
-        local = utc + datetime.timedelta(hours=3)
-        utils.set_mock_time(local, utc)
+    @staticmethod
+    def set(time):
+        utils.set_mock_time(time)
 
     def __del__(self):
         utils.reset_mock_time()

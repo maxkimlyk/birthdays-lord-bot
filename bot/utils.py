@@ -14,28 +14,19 @@ class _MockTime:
 _MOCK_TIME = _MockTime()
 
 
-def set_mock_time(local: datetime.datetime, utc: datetime.datetime):
+def set_mock_time(local: datetime.datetime):
     _MOCK_TIME.local = local
-    _MOCK_TIME.utc = utc
 
 
 def reset_mock_time():
     _MOCK_TIME.local = None
-    _MOCK_TIME.utc = None
-
-
-def now_utc() -> datetime.datetime:
-    if _MOCK_TIME.utc is not None:
-        return _MOCK_TIME.utc
-
-    return datetime.datetime.now()
 
 
 def now_local() -> datetime.datetime:
     if _MOCK_TIME.local is not None:
         return _MOCK_TIME.local
 
-    return now_utc()
+    return datetime.datetime.now()
 
 
 def get_local_timezone():
