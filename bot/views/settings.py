@@ -90,7 +90,9 @@ def _format_setting_value(setting: Any) -> str:
     return '<code>{}</code>'.format(_localize_setting_value(setting))
 
 
-def _format_spreadsheet_id_with_link(spreadsheet_id: str) -> str:
+def _format_spreadsheet_id_with_link(spreadsheet_id: Optional[str]) -> str:
+    if spreadsheet_id is None:
+        return '<code>отсутствует</code>'
     return '<a href="{}">{}</a>'.format(
         common.make_google_sheets_edit_link(spreadsheet_id), spreadsheet_id,
     )

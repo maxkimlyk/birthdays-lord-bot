@@ -6,3 +6,4 @@ from . import not_authorized
 from . import command_list
 from . import unknown_command
 from . import edit
+from . import require_spreadhsheet

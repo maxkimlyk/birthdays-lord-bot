@@ -5,6 +5,7 @@ from typing import Iterable, Set, List, Tuple, Optional
 import aiogram  # type: ignore
 
 from bot import context, views, types, birthdays_table, utils, exceptions, db
+from . import decorators
 
 MonthDay = Tuple[int, int]
 
@@ -254,6 +255,7 @@ async def do_periodic_stuff(ctx: context.Context):
             )
 
 
+@decorators.require_spreadsheet
 async def handle_birthdays_today(
         ctx: context.Context, message: aiogram.types.Message,
 ):
@@ -267,6 +269,7 @@ async def handle_birthdays_today(
     )
 
 
+@decorators.require_spreadsheet
 async def handle_birthdays_next_week(
         ctx: context.Context, message: aiogram.types.Message,
 ):

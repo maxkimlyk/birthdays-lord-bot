@@ -83,21 +83,34 @@ def test_select_birthdays_next_week(now, birthdays, expected):
 
 
 @pytest.mark.parametrize(
-    'now,birthdays_data,expected',
+    'now,spreadsheet_id,birthdays_data,expected',
     [
         (
             datetime.datetime(2020, 2, 1),
+            'mock_spreadsheet_id',
             [['John', '1.03'], ['Kate', '01.2'], ['Amy', '01.02.1990']],
             ('Сегодня дни рождения у\n' '<b>Kate</b>\n' '<b>Amy</b> - 30 лет'),
+        ),
+        (
+            datetime.datetime(2020, 2, 1),
+            None,
+            [['John', '1.03'], ['Kate', '01.2'], ['Amy', '01.02.1990']],
+            (
+                'Сначала необходимо привязать таблицу Google Sheets.\n'
+                'Привязать: /set_spreadsheet'
+            ),
         ),
     ],
 )
 @pytest.mark.asyncio
 async def test_handle_birthdays_today(
-        mock_context, mock_time, now, birthdays_data, expected,
+        mock_context, mock_time, now, spreadsheet_id, birthdays_data, expected,
 ):
     mock_time.set(now)
     mock_context.google_sheets_client.data = birthdays_data
+    mock_context.settings.get_for_user(MOCK_USER_ID)[
+        'spreadsheet_id'
+    ] = spreadsheet_id
     await dialogs_birthdays.handle_birthdays_today(
         mock_context, MockMessage('/today'),
     )
@@ -124,6 +137,8 @@ async def test_handle_birthdays_next_week(
 ):
     mock_time.set(now)
     mock_context.google_sheets_client.data = birthdays_data
+    mock_context.settings.get_for_user(MOCK_USER_ID)[
+        'spreadsheet_id'] = 'mock_spreadsheet_id'
     await dialogs_birthdays.handle_birthdays_next_week(
         mock_context, MockMessage('/today'),
     )
