@@ -32,3 +32,4 @@
 [x] dont allow any commands before guide is passed
 [ ] translate readme into russian
 [ ] when is given person's birthday
+[ ] bug: February 29 isn't shown for next week
