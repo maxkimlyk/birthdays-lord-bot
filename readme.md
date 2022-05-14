@@ -18,7 +18,7 @@ birthdays-lord-bot$ mkdir cache
 
 5. Run docker.
 ```bash
-birthdays-lord-bot$ docker-compose run --build -d
+birthdays-lord-bot$ docker-compose up --build -d
 ```
 
 # How to get Google Sheets API service account
