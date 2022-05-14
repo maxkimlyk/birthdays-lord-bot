@@ -257,7 +257,7 @@ async def do_periodic_stuff(ctx: context.Context):
 
 @decorators.require_spreadsheet
 async def handle_birthdays_today(
-        ctx: context.Context, message: aiogram.types.Message,
+        ctx: context.Context, message: aiogram.types.Message,  *args, **kwargs
 ):
     user_settings = ctx.settings.get_for_user(message.from_user.id)
     birthdays, _, _ = _get_data_from_google_table(
@@ -271,7 +271,7 @@ async def handle_birthdays_today(
 
 @decorators.require_spreadsheet
 async def handle_birthdays_next_week(
-        ctx: context.Context, message: aiogram.types.Message,
+        ctx: context.Context, message: aiogram.types.Message,  *args, **kwargs
 ):
     user_settings = ctx.settings.get_for_user(message.from_user.id)
     birthdays, _, _ = _get_data_from_google_table(
