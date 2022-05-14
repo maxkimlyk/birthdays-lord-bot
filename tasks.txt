@@ -33,3 +33,4 @@
 [ ] translate readme into russian
 [ ] when is given person's birthday
 [ ] bug: February 29 isn't shown for next week
+[ ] decorator require_spreadsheet suppresses handler parameters
